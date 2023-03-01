@@ -4,8 +4,16 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.execution.domain.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.Teacher;
+import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.Student;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
+
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 
 @Entity
@@ -17,7 +25,7 @@ public class QuestionStats implements DomainEntity{
     
     private int numAvailable;
     private int answeredQuestionsUnique;
-    private Float averageQuestionsAnswered;
+    private float averageQuestionsAnswered;
     
     @ManyToOne
     private TeacherDashboard teacherDashboard;
@@ -32,6 +40,10 @@ public class QuestionStats implements DomainEntity{
         setTeacherDashboard(teacherDashboard);
     }
 
+    public Integer getId() {
+        return id;
+    }
+
     public int getNumAvailable() {
         return this.numAvailable;
     }
@@ -40,7 +52,7 @@ public class QuestionStats implements DomainEntity{
         return this.answeredQuestionsUnique;
     }
 
-    public Float getAverageQuestionsAnswered() {
+    public float getAverageQuestionsAnswered() {
         return this.averageQuestionsAnswered;
     }
     
@@ -64,7 +76,7 @@ public class QuestionStats implements DomainEntity{
         this.answeredQuestionsUnique = answeredQuestionsUnique;
     }
 
-    public void setAverageQuestionsAnswered(Float averageQuestionsAnswered) {
+    public void setAverageQuestionsAnswered(float averageQuestionsAnswered) {
         this.averageQuestionsAnswered = averageQuestionsAnswered;
     }
 
@@ -76,6 +88,44 @@ public class QuestionStats implements DomainEntity{
         // Only to generate XML
     }
 
-    
+    public void update(){
+        setNumAvailable(this.courseExecution.getNumberOfQuestions());
+        setAnsweredQuestionsUnique(this.getTotalAnsweredQuestionsUnique());
+        setAverageQuestionsAnswered(this.getAverageStudentsUniqueAnswers());
+    }
 
+    public int getTotalAnsweredQuestionsUnique(){
+        return (int) (this.courseExecution.getCourse()
+                .getQuestions().stream().distinct()
+                .filter(question -> question.getNumberOfAnswers()>0).count());
+    }
+
+    public float getAverageStudentsUniqueAnswers(){
+        int studentsTotalUniqueAnswers = 0;
+        Set<Question> questions = new HashSet<>();
+        for (Student student:this.courseExecution.getStudents()){
+            for (QuizAnswer quizAnswer:student.getQuizAnswers()){
+                if (quizAnswer.getQuiz().getCourseExecution().equals(this.courseExecution)){
+                    for (QuizQuestion quizquestion:quizAnswer.getQuiz().getQuizQuestions()){
+                        questions.add(quizquestion.getQuestion());
+                    }
+                }
+            }
+            studentsTotalUniqueAnswers += questions.size();
+            questions.clear();
+        }
+
+        float result = (float) studentsTotalUniqueAnswers/this.courseExecution.getNumberOfActiveStudents();
+        return result;
+    }
+
+    @Override
+    public String toString() {
+        return "QuestionStats{" +
+                "id=" + id +
+                ", numAvailable=" + numAvailable +
+                ", answeredQuestionsUnique=" + answeredQuestionsUnique +
+                ", averageQuestionsAnswered=" + averageQuestionsAnswered +
+                '}';
+    }
 }
