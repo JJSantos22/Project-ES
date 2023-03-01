@@ -4,6 +4,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.execution.domain.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.Teacher;
+import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.domain.TeacherDashboard;
+
 
 import javax.persistence.*;
 import java.util.stream.Collectors;
@@ -34,8 +36,8 @@ public class QuizStats implements DomainEntity {
         setCourseExecution(courseExecution);
     }
 
-    public void remove() {
-        teacherDashboard.addQuizStats().remove(this);
+    public void remove(){
+        teacherDashboard.getQuizStats().remove(this);
         teacherDashboard = null;
     }
 

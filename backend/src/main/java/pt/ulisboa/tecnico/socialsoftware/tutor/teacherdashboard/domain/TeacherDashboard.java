@@ -5,7 +5,9 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.Teacher;
 import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.domain.QuestionStats;
+import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.domain.QuizStats;
 
+import java.util.ArrayList;
 import javax.persistence.*;
 import java.util.*;
 
@@ -16,6 +18,7 @@ public class TeacherDashboard implements DomainEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    private ArrayList<QuizStats> quizStats;
 
     @ManyToOne
     private CourseExecution courseExecution;
@@ -72,8 +75,26 @@ public class TeacherDashboard implements DomainEntity {
         // Only used for XML generation
     }
 
+    public void addQuizStats(QuizStats quizStats) {
+        this.quizStats.add(quizStats);
+    }
+
+    public void removeQuizStats(QuizStats quizStats) {
+        this.quizStats.remove(quizStats);
+    }
+
+    public ArrayList<QuizStats> getQuizStats() {
+        return quizStats;
+    }
+
+    public void setQuizStats(ArrayList<QuizStats> quizStats) {
+        this.quizStats = quizStats;
+    }
+
     public void update(){ 
         for (QuestionStats q: this.getQuestionStats())
+            q.update();
+        for (QuizStats q: this.getQuizStats())
             q.update();          
     }
 
