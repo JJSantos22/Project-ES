@@ -103,6 +103,7 @@ public class QuestionStats implements DomainEntity{
     public float getAverageStudentsUniqueAnswers(){
         int studentsTotalUniqueAnswers = 0;
         Set<Question> questions = new HashSet<>();
+        int n_students = 0;
         for (Student student:this.courseExecution.getStudents()){
             for (QuizAnswer quizAnswer:student.getQuizAnswers()){
                 if (quizAnswer.getQuiz().getCourseExecution().equals(this.courseExecution)){
@@ -113,10 +114,16 @@ public class QuestionStats implements DomainEntity{
             }
             studentsTotalUniqueAnswers += questions.size();
             questions.clear();
+            n_students++;
         }
 
-        float result = (float) studentsTotalUniqueAnswers/this.courseExecution.getNumberOfActiveStudents();
+        float result = (float) studentsTotalUniqueAnswers/n_students;
         return result;
+    }
+
+    public void remove() {
+        this.teacherDashboard.getQuestionStats().remove(this);
+        this.teacherDashboard = null;
     }
 
     @Override
