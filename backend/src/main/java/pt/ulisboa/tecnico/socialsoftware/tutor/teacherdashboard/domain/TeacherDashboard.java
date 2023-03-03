@@ -7,9 +7,9 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.Teacher;
 import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.domain.QuestionStats;
 import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.domain.QuizStats;
 
-import java.util.ArrayList;
 import javax.persistence.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Entity
@@ -18,7 +18,6 @@ public class TeacherDashboard implements DomainEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private ArrayList<QuizStats> quizStats;
 
     @ManyToOne
     private CourseExecution courseExecution;
@@ -27,7 +26,9 @@ public class TeacherDashboard implements DomainEntity {
     private Teacher teacher;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "teacherDashboard", orphanRemoval = true)
-    private List<QuestionStats> questionStats = new ArrayList<QuestionStats>(); 
+    private ArrayList<QuestionStats> questionStats = new ArrayList<QuestionStats>(); 
+
+    private ArrayList<QuizStats> quizStats;
 
     public TeacherDashboard() {
     }
@@ -63,7 +64,7 @@ public class TeacherDashboard implements DomainEntity {
         this.teacher.addDashboard(this);
     }
 
-    public List<QuestionStats> getQuestionStats() {
+    public ArrayList<QuestionStats> getQuestionStats() {
         return questionStats;
     }
 
@@ -106,5 +107,6 @@ public class TeacherDashboard implements DomainEntity {
                 ", teacher=" + teacher +
                 '}';
     }
+
 
 }

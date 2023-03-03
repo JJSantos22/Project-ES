@@ -6,9 +6,9 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.Teacher;
 import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.domain.TeacherDashboard;
 
-
 import javax.persistence.*;
 import java.util.stream.Collectors;
+
 
 
 @Entity
@@ -36,13 +36,9 @@ public class QuizStats implements DomainEntity {
         setCourseExecution(courseExecution);
     }
 
-    public void remove(){
+    public void remove() {
         teacherDashboard.getQuizStats().remove(this);
         teacherDashboard = null;
-    }
-
-    public Integer getId() {
-        return id;
     }
 
     public int getNumQuizzes() {
@@ -69,22 +65,6 @@ public class QuizStats implements DomainEntity {
         this.averageQuizzesSolved = averageQuizzesSolved;
     }
 
-    public void updateNumQuizzes() {
-        this.numQuizzes = courseExecution.getQuizzes().stream().
-            filter(quiz -> quiz.getAvailableDate() != null).
-            collect(Collectors.toList()).size();
-    }
-
-    public void updateUniqueQuizzesSolved() {
-        this.uniqueQuizzesSolved = courseExecution.getQuizzes().stream().
-            filter(quiz -> quiz.getConclusionDate() != null).
-            collect(Collectors.toList()).size();
-    }
-
-    public void updateAverageQuizzesSolved() {
-        this.averageQuizzesSolved = (getUniqueQuizzesSolved() / courseExecution.getNumberOfActiveStudents());
-    }
-
     public CourseExecution getCourseExecution() {
         return courseExecution;
     }
@@ -101,9 +81,22 @@ public class QuizStats implements DomainEntity {
         this.teacherDashboard = teacherDashboard;
     }
 
-    public void setQuizStat() {
-        this.teacherDashboard.addQuizStats(this);
+    public void updateNumQuizzes() {
+        this.numQuizzes = courseExecution.getQuizzes().stream().
+            filter(quiz -> quiz.getAvailableDate() != null).
+            collect(Collectors.toList()).size();
     }
+
+    public void updateUniqueQuizzesSolved() {
+        this.uniqueQuizzesSolved = courseExecution.getQuizzes().stream().
+            filter(quiz -> quiz.getConclusionDate() != null).
+            collect(Collectors.toList()).size();
+    }
+
+    public void updateAverageQuizzesSolved() {
+        this.averageQuizzesSolved = (getUniqueQuizzesSolved() / courseExecution.getNumberOfActiveStudents());
+    }
+
 
     @Override
     public String toString() {
@@ -120,7 +113,7 @@ public class QuizStats implements DomainEntity {
     public void accept(Visitor visitor) {
     }
 
-    public void update() {
+    public void update(){
         updateNumQuizzes();
         updateUniqueQuizzesSolved();
         updateAverageQuizzesSolved();
