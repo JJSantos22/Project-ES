@@ -8,7 +8,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.Student;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz;
-import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
 
 
 import javax.persistence.*;
@@ -107,8 +107,8 @@ public class QuestionStats implements DomainEntity{
         for (Student student:this.courseExecution.getStudents()){
             for (QuizAnswer quizAnswer:student.getQuizAnswers()){
                 if (quizAnswer.getQuiz().getCourseExecution().equals(this.courseExecution)){
-                    for (QuizQuestion quizquestion:quizAnswer.getQuiz().getQuizQuestions()){
-                        questions.add(quizquestion.getQuestion());
+                    for (QuestionAnswer questionAnswer:quizAnswer.getQuestionAnswers()){
+                        questions.add(questionAnswer.getQuestion());
                     }
                 }
             }

@@ -10,6 +10,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException
 import pt.ulisboa.tecnico.socialsoftware.tutor.execution.domain.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.Teacher
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.Student
 import pt.ulisboa.tecnico.socialsoftware.tutor.utils.DateHandler
@@ -18,7 +19,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.BeanConfiguration
 import pt.ulisboa.tecnico.socialsoftware.tutor.SpockTest
 import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.domain.QuestionStats
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question
-import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuizAnswer
 import spock.lang.Unroll
 
@@ -88,19 +89,22 @@ class UpdateQuestionStatsTest extends SpockTest {
 
     def "Update average number of unique answered questions by a student"(){
         given:
+        def quiz = new Quiz()
         def question1 = new Question()
         def question2 = new Question()
         def question3 = new Question()
+        def quizQuestion1 = new QuizQuestion(quiz, question1, 1)
+        def quizQuestion2 = new QuizQuestion(quiz, question2, 2)
+        def quizQuestion3 = new QuizQuestion(quiz, question3, 3)
         def student = new Student(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, false, AuthUser.Type.TECNICO)
         externalCourseExecution.addUser(student)
-        def quiz = new Quiz()
-        def quizQuestion1 = new QuizQuestion(quiz, question1, 1)
-        quiz.addQuizQuestion(quizQuestion1)
-        def quizQuestion2 = new QuizQuestion(quiz, question2, 2)
-        quiz.addQuizQuestion(quizQuestion2)
-        def quizQuestion3 = new QuizQuestion(quiz, question3, 3)
-        quiz.addQuizQuestion(quizQuestion3)
         def answer = new QuizAnswer(student, quiz)
+        def questionAnswer1 = new QuestionAnswer(answer, quizQuestion1, 1)
+        answer.addQuestionAnswer(questionAnswer1)
+        def questionAnswer2 = new QuestionAnswer(answer, quizQuestion2, 2)
+        answer.addQuestionAnswer(questionAnswer2)
+        def questionAnswer3 = new QuestionAnswer(answer, quizQuestion3, 3)
+        answer.addQuestionAnswer(questionAnswer3)
         student.addQuizAnswer(answer)
 
         and:
@@ -120,22 +124,24 @@ class UpdateQuestionStatsTest extends SpockTest {
     def "Update average number of unique answered questions by a student where the student has answered questions but not for this course execution"(){
         given:
         def courseExecution = new CourseExecution()
+        def quiz = new Quiz()
         def question1 = new Question()
         def question2 = new Question()
         def question3 = new Question()
+        def quizQuestion1 = new QuizQuestion(quiz, question1, 1)
+        def quizQuestion2 = new QuizQuestion(quiz, question2, 2)
+        def quizQuestion3 = new QuizQuestion(quiz, question3, 3)
         def student = new Student(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, false, AuthUser.Type.TECNICO)
         externalCourseExecution.addUser(student)
         courseExecution.addUser(student)
-        def quiz = new Quiz()
-        def quizQuestion1 = new QuizQuestion(quiz, question1, 1)
-        quiz.addQuizQuestion(quizQuestion1)
-        def quizQuestion2 = new QuizQuestion(quiz, question2, 2)
-        quiz.addQuizQuestion(quizQuestion2)
-        def quizQuestion3 = new QuizQuestion(quiz, question3, 3)
-        quiz.addQuizQuestion(quizQuestion3)
         def answer = new QuizAnswer(student, quiz)
+        def questionAnswer1 = new QuestionAnswer(answer, quizQuestion1, 1)
+        answer.addQuestionAnswer(questionAnswer1)
+        def questionAnswer2 = new QuestionAnswer(answer, quizQuestion2, 2)
+        answer.addQuestionAnswer(questionAnswer2)
+        def questionAnswer3 = new QuestionAnswer(answer, quizQuestion3, 3)
+        answer.addQuestionAnswer(questionAnswer3)
         student.addQuizAnswer(answer)
-        
 
         and:
 
