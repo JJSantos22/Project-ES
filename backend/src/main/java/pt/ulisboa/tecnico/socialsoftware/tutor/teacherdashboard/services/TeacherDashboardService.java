@@ -79,7 +79,6 @@ public class TeacherDashboardService {
             //System.out.println(quizStatsDto);
         }
 
-
         TeacherDashboardDto teacherDashboardDto = new TeacherDashboardDto(teacherDashboard);
 
         teacherDashboardDto.setQuizStatsDto(quizStatsDto);
@@ -130,5 +129,44 @@ public class TeacherDashboardService {
         }
 
         return quizStatsDto;
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void updateTeacherDashboard(int dashboardId) {
+        TeacherDashboard teacherDashboard = teacherDashboardRepository.findById(dashboardId)
+                .orElseThrow(() -> new TutorException(DASHBOARD_NOT_FOUND, dashboardId));
+
+        teacherDashboard.update();
+        
+        //ArrayList<QuizStatsDto> quizStatsDto = getQuizStatsDto(dashboardId);
+
+        //TeacherDashboardDto teacherDashboardDto = new TeacherDashboardDto(teacherDashboard);
+
+        //teacherDashboardDto.setQuizStatsDto(quizStatsDto);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void updateAllTeacherDashboard() {
+
+        List<Teacher> teachers = teacherRepository.findAll();
+
+        // For each teacher get all courses executions 
+        teachers.forEach(teacher -> {
+            teacher.getCourseExecutions().forEach(courseExecution -> {
+                // For each course execution get the dashboard 
+                Optional<TeacherDashboard> dashboardOptional = teacher.getDashboards().stream()
+                        .filter(dashboard -> dashboard.getCourseExecution().getId().equals(courseExecution.getId()))
+                        .findAny();
+
+                // If the dashboard exists update it, else create a new Dashboard
+                dashboardOptional.ifPresent(TeacherDashboard::update);
+                
+                if (dashboardOptional.isEmpty()) {
+                    TeacherDashboard teacherDashboard = new TeacherDashboard(courseExecution, teacher);
+                    teacherDashboardRepository.save(teacherDashboard);
+                }
+            });
+        });
+
     }
 }
