@@ -8,12 +8,14 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.execution.domain.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.execution.repository.CourseExecutionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.domain.TeacherDashboard;
+import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.domain.QuestionStats;
 import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.dto.TeacherDashboardDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.repository.TeacherDashboardRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.Teacher;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.repository.TeacherRepository;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
@@ -66,8 +68,19 @@ public class TeacherDashboardService {
 
     private TeacherDashboardDto createAndReturnTeacherDashboardDto(CourseExecution courseExecution, Teacher teacher) {
         TeacherDashboard teacherDashboard = new TeacherDashboard(courseExecution, teacher);
-        teacherDashboardRepository.save(teacherDashboard);
 
+        List<CourseExecution> lastCourseExecutions = teacherDashboard.getCourseExecution().getCourse().getCourseExecutions()
+                .stream().sorted(Comparator.comparingInt(CourseExecution::getYear).reversed())
+                .limit(3).collect(Collectors.toList());
+
+        List<QuestionStats> questionStats = lastCourseExecutions.stream()
+                .map(courseexecution -> new QuestionStats(teacherDashboard, courseExecution))
+                .collect(Collectors.toList());
+    
+        teacherDashboard.setQuestionStats(questionStats);
+
+        teacherDashboardRepository.save(teacherDashboard);
+        
         return new TeacherDashboardDto(teacherDashboard);
     }
 
