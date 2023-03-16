@@ -16,6 +16,8 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.studentdashboard.repository.Stude
 import pt.ulisboa.tecnico.socialsoftware.tutor.studentdashboard.repository.DifficultQuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.studentdashboard.repository.FailedAnswerRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.studentdashboard.repository.WeeklyScoreRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.domain.TeacherDashboard;
+import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.repository.TeacherDashboardRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.domain.Discussion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.domain.Reply;
 import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.repository.DiscussionRepository;
@@ -87,6 +89,9 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
 
     @Autowired
     private DifficultQuestionRepository difficultQuestionRepository;
+
+    @Autowired
+    private TeacherDashboardRepository teacherDashboardRepository;
 
     @Override
     public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
@@ -190,6 +195,9 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
                 case "DIFFICULTQUESTION.ACCESS":
                     DifficultQuestion difficultQuestion = difficultQuestionRepository.findById(id).orElse(null);
                     return difficultQuestion != null && userHasThisExecution(authUser, difficultQuestion.getCourseExecution().getId());
+                case "TEACHERDASHBOARD.ACCESS":
+                    TeacherDashboard teacherDashboard = teacherDashboardRepository.findById(id).orElse(null);
+                    return teacherDashboard != null && teacherDashboard.getTeacher().getId().equals(userId);
                 default:
                     return false;
             }
