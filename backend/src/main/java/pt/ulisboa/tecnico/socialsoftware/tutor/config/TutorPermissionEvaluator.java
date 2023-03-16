@@ -13,9 +13,11 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.studentdashboard.domain.Difficult
 import pt.ulisboa.tecnico.socialsoftware.tutor.studentdashboard.domain.FailedAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.studentdashboard.domain.WeeklyScore;
 import pt.ulisboa.tecnico.socialsoftware.tutor.studentdashboard.repository.StudentDashboardRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.repository.TeacherDashboardRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.studentdashboard.repository.DifficultQuestionRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.studentdashboard.repository.FailedAnswerRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.studentdashboard.repository.WeeklyScoreRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.domain.TeacherDashboard;
 import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.domain.Discussion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.domain.Reply;
 import pt.ulisboa.tecnico.socialsoftware.tutor.discussion.repository.DiscussionRepository;
@@ -80,6 +82,9 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
     private StudentDashboardRepository studentDashboardRepository;
 
     @Autowired
+    private TeacherDashboardRepository teacherDashboardRepository;
+
+    @Autowired
     private WeeklyScoreRepository weeklyScoreRepository;
 
     @Autowired
@@ -98,7 +103,8 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
             String permissionValue = (String) permission;
             switch (permissionValue) {
                 case "EXECUTION.CREATE":
-                    return ((AuthTecnicoUser) authUser).getEnrolledCoursesAcronyms().contains(courseExecutionDto.getAcronym() + courseExecutionDto.getAcademicTerm());
+                    return ((AuthTecnicoUser) authUser).getEnrolledCoursesAcronyms()
+                            .contains(courseExecutionDto.getAcronym() + courseExecutionDto.getAcademicTerm());
                 case "DEMO.ACCESS":
                     return courseExecutionDto.getName().equals("Demo Course");
                 default:
@@ -158,7 +164,8 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
                 case "SUBMISSION.ACCESS":
                     QuestionSubmission questionSubmission = questionSubmissionRepository.findById(id).orElse(null);
                     if (questionSubmission != null) {
-                        boolean hasCourseExecutionAccess = userHasThisExecution(authUser, questionSubmission.getCourseExecution().getId());
+                        boolean hasCourseExecutionAccess = userHasThisExecution(authUser,
+                                questionSubmission.getCourseExecution().getId());
                         if (authUser.getUser().getRole() == User.Role.STUDENT) {
                             return hasCourseExecutionAccess && questionSubmission.getSubmitter().getId().equals(userId);
                         } else {
@@ -174,10 +181,12 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
                     return discussion != null && discussion.getStudent().getId().equals(userId);
                 case "DISCUSSION.ACCESS":
                     discussion = discussionRepository.findById(id).orElse(null);
-                    return discussion != null && authUser.getUser().isTeacher() && userHasThisExecution(authUser, discussion.getCourseExecution().getId());
+                    return discussion != null && authUser.getUser().isTeacher()
+                            && userHasThisExecution(authUser, discussion.getCourseExecution().getId());
                 case "REPLY.ACCESS":
                     Reply reply = replyRepository.findById(id).orElse(null);
-                    return reply != null && userHasThisExecution(authUser, reply.getDiscussion().getCourseExecution().getId());
+                    return reply != null
+                            && userHasThisExecution(authUser, reply.getDiscussion().getCourseExecution().getId());
                 case "DASHBOARD.ACCESS":
                     StudentDashboard studentDashboard = studentDashboardRepository.findById(id).orElse(null);
                     return studentDashboard != null && studentDashboard.getStudent().getId().equals(userId);
@@ -189,7 +198,11 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
                     return failedAnswer != null && failedAnswer.getDashboard().getStudent().getId().equals(userId);
                 case "DIFFICULTQUESTION.ACCESS":
                     DifficultQuestion difficultQuestion = difficultQuestionRepository.findById(id).orElse(null);
-                    return difficultQuestion != null && userHasThisExecution(authUser, difficultQuestion.getCourseExecution().getId());
+                    return difficultQuestion != null
+                            && userHasThisExecution(authUser, difficultQuestion.getCourseExecution().getId());
+                case "TEACHERDASHBOARD.ACCESS":
+                    TeacherDashboard teacherDashboard = teacherDashboardRepository.findById(id).orElse(null);
+                    return teacherDashboard != null && teacherDashboard.getTeacher().getId().equals(userId);
                 default:
                     return false;
             }

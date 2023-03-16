@@ -77,7 +77,14 @@ public class TeacherDashboardService {
 
                 List<CourseExecution> lastCourseExecutions = teacherDashboard.getCourseExecution().getCourse()
                                 .getCourseExecutions().stream()
-                                .sorted(Comparator.comparingInt(CourseExecution::getYear).reversed())
+                                .sorted(Comparator.comparingInt(CourseExecution::getYear).reversed()).filter(c -> {
+                                        try {
+                                                c.getYear();
+                                        } catch (Exception e) {
+                                                return false;
+                                        }
+                                        return true;
+                                })
                                 .limit(3).collect(Collectors.toList());
 
                 List<StudentStats> studentStats = lastCourseExecutions.stream()
