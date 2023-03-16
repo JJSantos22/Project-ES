@@ -7,14 +7,17 @@ import org.springframework.transaction.annotation.Transactional;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.execution.domain.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.execution.repository.CourseExecutionRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.domain.QuizStats;
 import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.domain.TeacherDashboard;
+import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.dto.QuizStatsDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.dto.TeacherDashboardDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.repository.TeacherDashboardRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.Teacher;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.repository.TeacherRepository;
 
 import java.util.*;
-
+import java.util.stream.Collectors;
+import static java.util.Comparator.comparingInt;
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 @Service
@@ -65,10 +68,23 @@ public class TeacherDashboardService {
     }
 
     private TeacherDashboardDto createAndReturnTeacherDashboardDto(CourseExecution courseExecution, Teacher teacher) {
+
         TeacherDashboard teacherDashboard = new TeacherDashboard(courseExecution, teacher);
+
         teacherDashboardRepository.save(teacherDashboard);
 
-        return new TeacherDashboardDto(teacherDashboard);
+        ArrayList<QuizStatsDto> quizStatsDto = getQuizStatsDto(teacherDashboard.getId());
+
+        if (quizStatsDto.isEmpty()) {
+            //System.out.println(quizStatsDto);
+        }
+
+
+        TeacherDashboardDto teacherDashboardDto = new TeacherDashboardDto(teacherDashboard);
+
+        teacherDashboardDto.setQuizStatsDto(quizStatsDto);
+
+        return teacherDashboardDto;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
@@ -81,4 +97,38 @@ public class TeacherDashboardService {
         teacherDashboardRepository.delete(teacherDashboard);
     }
 
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public ArrayList<QuizStatsDto> getQuizStatsDto(int teacherDashboardId) {
+
+        ArrayList<QuizStatsDto> quizStatsDto = new ArrayList<QuizStatsDto>();
+
+        TeacherDashboard teacherDashboard = teacherDashboardRepository.findById(teacherDashboardId)
+                .orElseThrow(() -> new TutorException(DASHBOARD_NOT_FOUND, teacherDashboardId));
+
+        Set<CourseExecution> courseExecutions = teacherDashboard.getCourseExecution().getCourse().getCourseExecutions();
+
+        if (courseExecutions.size() > 3) {
+            List<CourseExecution> threeMostRecentCourseExecutions = courseExecutions.stream()
+            .sorted(comparingInt(CourseExecution::getYear).reversed())
+            .limit(3)
+            .collect(Collectors.toList());
+
+            List<QuizStats> quizStats = teacherDashboard.getQuizStats().stream().
+            filter(quizStat -> threeMostRecentCourseExecutions.contains(quizStat.getCourseExecution())).collect(Collectors.toList());
+
+            teacherDashboard.setQuizStats(quizStats);
+
+            quizStatsDto = (ArrayList<QuizStatsDto>) quizStats.stream().map(QuizStatsDto::new).collect(Collectors.toList());
+        }
+        else if (courseExecutions.size() > 0) {
+            List<QuizStats> quizStats = teacherDashboard.getQuizStats().stream().
+            filter(quizStat -> courseExecutions.contains(quizStat.getCourseExecution())).collect(Collectors.toList());
+
+            teacherDashboard.setQuizStats(quizStats);
+
+            quizStatsDto = (ArrayList<QuizStatsDto>) quizStats.stream().map(QuizStatsDto::new).collect(Collectors.toList());
+        }
+
+        return quizStatsDto;
+    }
 }
