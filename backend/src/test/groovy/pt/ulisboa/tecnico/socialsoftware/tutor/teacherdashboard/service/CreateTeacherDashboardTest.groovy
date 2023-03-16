@@ -137,6 +137,33 @@ import spock.lang.Unroll
 
     }
 
+    def "create a dashboard with less than three coursesExecutions existing"() {
+        
+        given: "A course with two courses executions"       
+        def courseExecution2020 = new CourseExecution(externalCourse, COURSE_2_ACRONYM, COURSE_2_ACADEMIC_TERM, Course.Type.EXTERNAL, LocalDateTime.of(2020, 1, 1, 1, 1))
+        courseRepository.save(courseExecution2020)
+
+        when:
+        teacher.addCourse(courseExecution2020)
+        teacher.addCourse(externalCourseExecution)
+
+        then:
+        teacher.getCourseExecutions().size() == 2;
+
+        when:
+        teacherDashboardService.createTeacherDashboard(externalCourseExecution.getId(), teacher.getId())
+
+        then: "an empty dashboard is created"
+        teacherDashboardRepository.count() == 1L
+        
+        def result = teacherDashboardRepository.findAll().get(0)
+        result.getId() != 0
+        result.getCourseExecution().getId() == externalCourseExecution.getId()
+        result.getQuizStats().size() == 2
+        result.getQuizStats().get(0).getCourseExecution().getEndDate().getYear()== DateHandler.now().getYear()
+        result.getQuizStats().get(1).getCourseExecution().getEndDate().getYear()== 2020
+    }
+
     @TestConfiguration
     static class LocalBeanConfiguration extends BeanConfiguration {}
 }
