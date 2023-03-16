@@ -102,7 +102,7 @@ import spock.lang.Unroll
     }
 
 
-    def "cannot create a dashboard with multiple coursesExecutions"() {
+    def "create a dashboard with 4 coursesExecutions"() {
 
         given: "A course with four courses executions"
         def courseExecution2017 = new CourseExecution(externalCourse, COURSE_1_ACRONYM, COURSE_1_ACADEMIC_TERM, Course.Type.EXTERNAL, LocalDateTime.of(2017, 1, 1, 1, 1))
@@ -115,7 +115,6 @@ import spock.lang.Unroll
         courseRepository.save(courseExecution2020)
 
         when:
-        //teacher.addCourse(courseExecution2019)
         teacher.addCourse(courseExecution2020)
 
         then:
@@ -137,6 +136,37 @@ import spock.lang.Unroll
 
     }
 
+
+    def "create a dashboard with 2 coursesExecutions"() {
+
+        given: "A course with four courses executions"
+        def courseExecution2019 = new CourseExecution(externalCourse, COURSE_2_ACRONYM, COURSE_1_ACADEMIC_TERM, Course.Type.EXTERNAL, LocalDateTime.of(2019, 1, 1, 1, 1))
+        courseRepository.save(courseExecution2019)
+        def courseExecution2020 = new CourseExecution(externalCourse, COURSE_2_ACRONYM, COURSE_2_ACADEMIC_TERM, Course.Type.EXTERNAL, LocalDateTime.of(2020, 1, 1, 1, 1))
+        courseRepository.save(courseExecution2020)
+
+        when:
+        teacher.addCourse(courseExecution2020)
+
+        then:
+        teacher.getCourseExecutions().size() == 1;
+
+        when:
+        teacherDashboardService.createTeacherDashboard(courseExecution2020.getId(), teacher.getId())
+
+        then: "an empty dashboard is created"
+        teacherDashboardRepository.count() == 1L
+
+        def result = teacherDashboardRepository.findAll().get(0)
+        result.getId() != 0
+        result.getCourseExecution().getId() == courseExecution2020.getId()
+        result.getStudentStats().size() == 2
+        result.getStudentStats().get(0).getCourseExecution().getEndDate().getYear()== 2020
+        result.getStudentStats().get(1).getCourseExecution().getEndDate().getYear()== 2019
+
+    }
+
+    
     @TestConfiguration
     static class LocalBeanConfiguration extends BeanConfiguration {}
 }
