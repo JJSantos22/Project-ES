@@ -74,7 +74,7 @@ public class TeacherDashboardService {
         TeacherDashboard teacherDashboard = new TeacherDashboard(courseExecution, teacher);
         
         List<CourseExecution> lastCourseExecutions = teacherDashboard.getCourseExecution().getCourse().getCourseExecutions()
-        .stream().sorted(Comparator.comparingInt(CourseExecution::getYear).reversed()).filter(c->{
+        .stream().filter(c->{
             try{
                 c.getYear();
                 
@@ -82,7 +82,7 @@ public class TeacherDashboardService {
                 return false;
             }
             return true;})
-        .limit(3).collect(Collectors.toList());
+        .sorted(Comparator.comparingInt(CourseExecution::getYear).reversed()).limit(3).collect(Collectors.toList());
         
         List<QuestionStats> questionStats = lastCourseExecutions.stream()
                 .map(courseexecution -> new QuestionStats(teacherDashboard, courseExecution))
@@ -109,6 +109,11 @@ public class TeacherDashboardService {
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public void updateAllTeacherDashboards(){
+        courseExecutionRepository.findAll().forEach(courseExecution -> {
+            courseExecution.getTeachers().stream()
+                .filter(teacher -> teacher.getCourseExecutionDashboard(courseExecution)==null)
+                    .forEach(teacher -> createTeacherDashboard(courseExecution.getId(), teacher.getId()));    
+        });
         List<TeacherDashboard> teacherDashboards = teacherDashboardRepository.findAll();
         teacherDashboards.forEach(teacherDashboard -> {
             teacherDashboard.update();
