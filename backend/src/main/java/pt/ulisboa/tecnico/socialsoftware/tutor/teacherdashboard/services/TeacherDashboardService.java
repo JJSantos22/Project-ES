@@ -76,7 +76,8 @@ public class TeacherDashboardService {
         TeacherDashboard teacherDashboard = new TeacherDashboard(courseExecution, teacher);
 
         List<CourseExecution> lastCourseExecutions = teacherDashboard.getCourseExecution().getCourse().getCourseExecutions().
-            stream().sorted(Comparator.comparing(CourseExecution::getEndDate).reversed()).filter(c -> c.getEndDate() != null && !c.getEndDate().isAfter(courseExecution.getEndDate())).
+            stream().sorted(Comparator.comparing(CourseExecution::getEndDate).reversed()).
+            filter(c -> c.getEndDate() != null && !c.getEndDate().isAfter(courseExecution.getEndDate())).
             limit(3).collect(Collectors.toList());
 
         List<QuizStats> quizStats = lastCourseExecutions.stream()
@@ -105,38 +106,15 @@ public class TeacherDashboardService {
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void setQuizStats(int teacherDashboardId) {
-
-        TeacherDashboard teacherDashboard = teacherDashboardRepository.findById(teacherDashboardId)
-                .orElseThrow(() -> new TutorException(DASHBOARD_NOT_FOUND, teacherDashboardId));
-
-        Set<CourseExecution> courseExecutions = teacherDashboard.getCourseExecution().getCourse().getCourseExecutions();
-
-        if (courseExecutions.size() > 3) {
-            List<CourseExecution> threeMostRecentCourseExecutions = courseExecutions.stream()
-            .sorted(comparingInt(CourseExecution::getYear).reversed())
-            .limit(3)
-            .collect(Collectors.toList());
-
-            List<QuizStats> quizStats = teacherDashboard.getQuizStats().stream().
-            filter(quizStat -> threeMostRecentCourseExecutions.contains(quizStat.getCourseExecution())).collect(Collectors.toList());
-
-            teacherDashboard.setQuizStats(quizStats);
+    public void updateTeacherDashboard(Integer dashboardId) {
+        if (dashboardId == null) {
+            throw new TutorException(DASHBOARD_NOT_FOUND, -1);
         }
-        else if (courseExecutions.size() > 0) {
-            List<QuizStats> quizStats = teacherDashboard.getQuizStats().stream().
-            filter(quizStat -> courseExecutions.contains(quizStat.getCourseExecution())).collect(Collectors.toList());
-
-            teacherDashboard.setQuizStats(quizStats);
-        }
-    }
-
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void updateTeacherDashboard(int dashboardId) {
         TeacherDashboard teacherDashboard = teacherDashboardRepository.findById(dashboardId)
                 .orElseThrow(() -> new TutorException(DASHBOARD_NOT_FOUND, dashboardId));
 
         teacherDashboard.update();
+
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
