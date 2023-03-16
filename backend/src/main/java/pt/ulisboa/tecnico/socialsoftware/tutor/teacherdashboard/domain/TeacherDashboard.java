@@ -27,7 +27,7 @@ public class TeacherDashboard implements DomainEntity {
     @OneToMany
     private List<QuizStats> quizStats = new ArrayList<>();
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "teacherDashboard", orphanRemoval = true)
     private List<StudentStats> studentStats = new ArrayList<>();
 
     @OneToMany
@@ -106,11 +106,8 @@ public class TeacherDashboard implements DomainEntity {
     public void remove() {
         teacher.getDashboards().remove(this);
         teacher = null;
-        quizStats = null;
-        studentStats = null;
-        questionStats = null;
     }
-
+    
     public void accept(Visitor visitor) {
         // Only used for XML generation
     }
