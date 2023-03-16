@@ -5,9 +5,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.domain.TeacherDashboard;
+import java.util.*;
+import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.dto.QuizStatsDto;
 
 public class TeacherDashboardDto {
     private Integer id;
+    private Integer numberOfStudents;
+    private ArrayList<QuizStatsDto> quizStats = new ArrayList<>();;
     private List<StudentStatsDto> studentStatsDtoList;
 
     public TeacherDashboardDto() {
@@ -15,6 +19,9 @@ public class TeacherDashboardDto {
 
     public TeacherDashboardDto(TeacherDashboard teacherDashboard) {
         this.id = teacherDashboard.getId();
+        // For the number of students, we consider only active students
+        this.numberOfStudents = teacherDashboard.getCourseExecution().getNumberOfActiveStudents();
+        teacherDashboard.getQuizStats().forEach(quizStats -> this.quizStats.add(new QuizStatsDto(quizStats)));
         this.studentStatsDtoList = teacherDashboard.getStudentStats().stream().map(StudentStatsDto::new)
                 .collect(Collectors.toList());
     }
@@ -35,10 +42,20 @@ public class TeacherDashboardDto {
         this.studentStatsDtoList = studentStatsDtoList;
     }
 
+    public void setQuizStatsDto(ArrayList<QuizStatsDto> quizStats) {
+        this.quizStats = quizStats;
+    }
+
+    public ArrayList<QuizStatsDto> getQuizStatsDto() {
+        return quizStats;
+    }
+
     @Override
     public String toString() {
         return "TeacherDashboardDto{" +
                 "id=" + id +
+                ", numberOfStudents=" + numberOfStudents +
+                ", quizStats=" + quizStats +
                 "studentStatsDtoList= " + studentStatsDtoList +
                 "}";
     }
