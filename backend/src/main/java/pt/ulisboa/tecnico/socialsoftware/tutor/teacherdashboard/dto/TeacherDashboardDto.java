@@ -6,7 +6,7 @@ import java.util.*;
 public class TeacherDashboardDto {
     private Integer id;
     private Integer numberOfStudents;
-    private ArrayList<QuizStatsDto> quizStats;
+    private ArrayList<QuizStatsDto> quizStats = new ArrayList<>();;
 
     public TeacherDashboardDto() {
     }
@@ -15,7 +15,7 @@ public class TeacherDashboardDto {
         this.id = teacherDashboard.getId();
         // For the number of students, we consider only active students
         this.numberOfStudents = teacherDashboard.getCourseExecution().getNumberOfActiveStudents();
-        this.quizStats = new ArrayList<QuizStatsDto>();
+        teacherDashboard.getQuizStats().forEach(quizStats -> this.quizStats.add(new QuizStatsDto(quizStats)));
     }
 
     public Integer getId() {
