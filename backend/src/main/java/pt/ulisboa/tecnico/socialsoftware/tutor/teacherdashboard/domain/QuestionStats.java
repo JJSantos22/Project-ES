@@ -17,39 +17,36 @@ public class QuestionStats implements DomainEntity {
     private Integer id;
 
     @OneToOne
-    private CourseExecution execution;
+    private CourseExecution courseExecution;
 
     @ManyToOne
-    private TeacherDashboard dashboard;
+    private TeacherDashboard teacherDashboard;
 
-    private Integer numAvailable, answeredQuestionsUnique;
-    private Float averageQuestionsAnswered;
+    private int numAvailable, answeredQuestionsUnique;
+    private float averageQuestionsAnswered;
 
     public QuestionStats () {}
 
     public QuestionStats (TeacherDashboard dashboard, CourseExecution execution) {
         setDashboard(dashboard);
-        setCourseExecution(execution);
-        numAvailable = 0;
-        answeredQuestionsUnique = 0;
-        averageQuestionsAnswered = 0.0f;        
+        setCourseExecution(execution);      
     }
 
     public void setDashboard (TeacherDashboard dashboard) {
-        this.dashboard = dashboard;
+        this.teacherDashboard = dashboard;
         dashboard.addQuestionStats(this);
     }
 
     public void setCourseExecution (CourseExecution execution) {
-        this.execution = execution;
+        this.courseExecution = execution;
     }
 
     public CourseExecution getCourseExecution () {
-        return this.execution;
+        return this.courseExecution;
     }
 
     public TeacherDashboard getTeacherDashboard () {
-        return this.dashboard;
+        return this.teacherDashboard;
     }
 
     public Integer getId() {
@@ -57,49 +54,57 @@ public class QuestionStats implements DomainEntity {
     }
 
     public void remove () {
-        execution = null;
-        dashboard.getQuestionStats().remove(this);
-        dashboard = null;
+        teacherDashboard.getQuestionStats().remove(this);
+        courseExecution = null;
+        teacherDashboard = null;
     }
 
-    public Integer getNumAvailable() {
+    public int getNumAvailable() {
         return this.numAvailable;
     }
 
-    public Integer getAnsweredQuestionsUnique() {
+    public int getAnsweredQuestionsUnique() {
         return this.answeredQuestionsUnique;
     }
 
-    public Float getAverageQuestionsAnswered() {
+    public float getAverageQuestionsAnswered() {
         return this.averageQuestionsAnswered;
     }
 
+    public void setNumAvailable(int numAvailable) {
+        this.numAvailable = numAvailable;
+    }
+
+    public void setAnsweredQuestionsUnique(int answeredQuestionsUnique) {
+        this.answeredQuestionsUnique = answeredQuestionsUnique;
+    }
+
+    public void setAverageQuestionsAnswered(float averageQuestionsAnswered) {
+        this.averageQuestionsAnswered = averageQuestionsAnswered;
+    }
+
     public void update() {
-        // number of available questions
-        this.numAvailable = (int) execution.getQuizzes().stream()
+        this.numAvailable = (int) courseExecution.getQuizzes().stream()
             .flatMap(q -> q.getQuizQuestions().stream())
             .map(QuizQuestion::getQuestion)
             .filter(q -> q.getStatus() == Status.AVAILABLE)
             .distinct()
             .count();
         
-        // number of answered questions at least once
-        this.answeredQuestionsUnique = (int) execution.getQuizzes().stream()
+        this.answeredQuestionsUnique = (int) courseExecution.getQuizzes().stream()
                 .flatMap(q -> q.getQuizAnswers() .stream()
                     .flatMap(qa -> qa.getQuestionAnswers().stream()
                         .map(QuestionAnswer::getQuestion)))
             .distinct()
             .count();
 
-        // number of students 
-        int students = execution.getStudents().size();
+        int students = courseExecution.getStudents().size();
 
-        long uniqueAllStudents = execution.getStudents().stream().mapToLong(student -> 
+        long uniqueAllStudents = courseExecution.getStudents().stream().mapToLong(student -> 
             student.getQuizAnswers().stream().flatMap(
                 qa -> qa.getQuestionAnswers().stream().map(QuestionAnswer::getQuestion)
             ).distinct().count()).sum();
 
-        // average
         this.averageQuestionsAnswered = students > 0 ? (float) uniqueAllStudents / students : 0.0f;
     }
 
@@ -112,8 +117,8 @@ public class QuestionStats implements DomainEntity {
     public String toString() {
         return "QuestionStats{" +
             "id=" + id +
-            ", teacherDashboard=" + dashboard.getId() +
-            ", courseExecution=" + execution.getId() +
+            ", teacherDashboard=" + teacherDashboard.getId() +
+            ", courseExecution=" + courseExecution.getId() +
             ", numAvailable=" + numAvailable +
             ", answeredQuestionsUnique=" + answeredQuestionsUnique +
             ", averageQuestionsAnswered=" + averageQuestionsAnswered +

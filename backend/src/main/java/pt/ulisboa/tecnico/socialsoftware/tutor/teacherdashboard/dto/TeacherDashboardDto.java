@@ -24,18 +24,19 @@ public class TeacherDashboardDto {
         this.id = id;
     }
 
-    /* public List<QuestionStatsDto> getQuestionStatsDto() {
+    public List<QuestionStatsDto> getQuestionStatsDto() {
         return questionStatsDto;
     }
 
     public void setQuestionStatsDto(List<QuestionStatsDto> questionStatsDto) {
         this.questionStatsDto = questionStatsDto;
-    } */
+    }
 
     @Override
     public String toString() {
         return "TeacherDashboardDto{" +
                 "id=" + id +
+                ", questionStatsDto=" + questionStatsDto +
                 "}";
     }
 }

@@ -19,7 +19,7 @@ public class QuestionStatsDto implements Serializable {
         this.numAvailable = questionStats.getNumAvailable();
         this.answeredQuestionsUnique = questionStats.getAnsweredQuestionsUnique();
         this.averageQuestionsAnswered = questionStats.getAverageQuestionsAnswered();  
-        /* this.year = questionStats.getCourseExecution().getYear(); */
+        this.year = questionStats.getCourseExecution().getYear();
     } 
 
     public Integer getId(){
@@ -69,8 +69,7 @@ public class QuestionStatsDto implements Serializable {
                 "numAvailable=" + numAvailable +
                 ", answeredQuestionsUnique=" + answeredQuestionsUnique +
                 ", averageQuestionsAnswered=" + averageQuestionsAnswered +
-                /* ", year=" + year + */
+                ", year=" + year +
                 '}';
     }
-    
 }
