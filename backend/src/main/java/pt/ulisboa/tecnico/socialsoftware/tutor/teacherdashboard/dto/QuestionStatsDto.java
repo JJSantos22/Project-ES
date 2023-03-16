@@ -5,30 +5,40 @@ import java.io.Serializable;
 
 public class QuestionStatsDto implements Serializable {
 
-    private Integer numAvailable;
-    private Integer answeredQuestionsUnique;
-    private Float averageQuestionsAnswered; 
-    private Integer year;
+    private Integer id;
+    private int numAvailable;
+    private int answeredQuestionsUnique;
+    private float averageQuestionsAnswered; 
+    private int year;
 
     public QuestionStatsDto(){    
     }
 
     public QuestionStatsDto(QuestionStats questionStats){
+        this.id = questionStats.getId();
         this.numAvailable = questionStats.getNumAvailable();
         this.answeredQuestionsUnique = questionStats.getAnsweredQuestionsUnique();
         this.averageQuestionsAnswered = questionStats.getAverageQuestionsAnswered();  
-        this.year = questionStats.getCourseExecution().getYear();
+        /* this.year = questionStats.getCourseExecution().getYear(); */
+    } 
+
+    public Integer getId(){
+        return id;
     }
 
-    public Integer getNumAvailable(){
+    public void setId(Integer id){
+        this.id = id;
+    }
+
+    public int getNumAvailable(){
         return numAvailable;
     }
 
-    public Integer getAnswerQuestionsUnique(){
+    public int getAnswerQuestionsUnique(){
         return answeredQuestionsUnique;
     }
 
-    public Float getAverageQuestionsAnswered(){
+    public float getAverageQuestionsAnswered(){
         return averageQuestionsAnswered;
     }
 
@@ -36,29 +46,30 @@ public class QuestionStatsDto implements Serializable {
         return year;
     }
 
-    public void setNumAvailable(Integer numAvailable){
+    public void setNumAvailable(int numAvailable){
         this.numAvailable = numAvailable;
     }
 
-    public void setAnsweredQuestionsUnique(Integer answeredQuestionsUnique){
+    public void setAnsweredQuestionsUnique(int answeredQuestionsUnique){
         this.answeredQuestionsUnique = answeredQuestionsUnique;
     }
 
-    public void setAverageQuestionsUnique(Float averageQuestionsUnique){
+    public void setAverageQuestionsUnique(float averageQuestionsUnique){
         this.averageQuestionsAnswered = averageQuestionsUnique;
     }
 
-    public void setYear(Integer year){
+    public void setYear(int year){
         this.year = year;
     }
 
     @Override
     public String toString() {
         return "QuestionStatsDto{" +
+                "id=" + id +
                 "numAvailable=" + numAvailable +
                 ", answeredQuestionsUnique=" + answeredQuestionsUnique +
                 ", averageQuestionsAnswered=" + averageQuestionsAnswered +
-                ", year=" + year +
+                /* ", year=" + year + */
                 '}';
     }
     

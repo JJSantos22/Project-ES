@@ -11,6 +11,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.domain.TeacherDa
 import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.domain.QuestionStats;
 import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.dto.TeacherDashboardDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.repository.TeacherDashboardRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.repository.QuestionStatsRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.Teacher;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.repository.TeacherRepository;
 
@@ -30,6 +31,9 @@ public class TeacherDashboardService {
 
     @Autowired
     private TeacherDashboardRepository teacherDashboardRepository;
+
+    @Autowired
+    private QuestionStatsRepository questionStatsRepository;
 
     @Transactional(isolation = Isolation.READ_COMMITTED)
     public TeacherDashboardDto getTeacherDashboard(int courseExecutionId, int teacherId) {
@@ -68,17 +72,18 @@ public class TeacherDashboardService {
 
     private TeacherDashboardDto createAndReturnTeacherDashboardDto(CourseExecution courseExecution, Teacher teacher) {
         TeacherDashboard teacherDashboard = new TeacherDashboard(courseExecution, teacher);
-
+        
         List<CourseExecution> lastCourseExecutions = teacherDashboard.getCourseExecution().getCourse().getCourseExecutions()
-                .stream().sorted(Comparator.comparingInt(CourseExecution::getYear).reversed())
-                .limit(3).collect(Collectors.toList());
-
+        .stream().sorted(Comparator.comparingInt(CourseExecution::getYear).reversed())
+        .limit(3).collect(Collectors.toList());
+        
         List<QuestionStats> questionStats = lastCourseExecutions.stream()
-                .map(courseexecution -> new QuestionStats(teacherDashboard, courseExecution))
-                .collect(Collectors.toList());
-    
+        .map(courseexecution -> new QuestionStats(teacherDashboard, courseExecution))
+        .collect(Collectors.toList());
+        
         teacherDashboard.setQuestionStats(questionStats);
-
+        
+        questionStats.forEach(questionStat -> questionStatsRepository.save(questionStat));
         teacherDashboardRepository.save(teacherDashboard);
         
         return new TeacherDashboardDto(teacherDashboard);
