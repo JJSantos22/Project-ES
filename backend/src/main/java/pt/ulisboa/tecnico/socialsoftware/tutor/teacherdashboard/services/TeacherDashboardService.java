@@ -74,12 +74,19 @@ public class TeacherDashboardService {
         TeacherDashboard teacherDashboard = new TeacherDashboard(courseExecution, teacher);
         
         List<CourseExecution> lastCourseExecutions = teacherDashboard.getCourseExecution().getCourse().getCourseExecutions()
-        .stream().sorted(Comparator.comparingInt(CourseExecution::getYear).reversed())
+        .stream().sorted(Comparator.comparingInt(CourseExecution::getYear).reversed()).filter(c->{
+            try{
+                c.getYear();
+                
+            }catch(Exception e){
+                return false;
+            }
+            return true;})
         .limit(3).collect(Collectors.toList());
         
         List<QuestionStats> questionStats = lastCourseExecutions.stream()
-        .map(courseexecution -> new QuestionStats(teacherDashboard, courseExecution))
-        .collect(Collectors.toList());
+                .map(courseexecution -> new QuestionStats(teacherDashboard, courseExecution))
+                .collect(Collectors.toList());
         
         teacherDashboard.setQuestionStats(questionStats);
         
@@ -94,9 +101,19 @@ public class TeacherDashboardService {
         if (dashboardId == null)
             throw new TutorException(DASHBOARD_NOT_FOUND, -1);
 
-        TeacherDashboard teacherDashboard = teacherDashboardRepository.findById(dashboardId).orElseThrow(() -> new TutorException(DASHBOARD_NOT_FOUND, dashboardId));
+        TeacherDashboard teacherDashboard = teacherDashboardRepository.findById(dashboardId)
+                .orElseThrow(() -> new TutorException(DASHBOARD_NOT_FOUND, dashboardId));
         teacherDashboard.remove();
         teacherDashboardRepository.delete(teacherDashboard);
+    }
+
+    @Transactional(isolation = Isolation.READ_COMMITTED)
+    public void updateAllTeacherDashboards(){
+        List<TeacherDashboard> teacherDashboards = teacherDashboardRepository.findAll();
+        teacherDashboards.forEach(teacherDashboard -> {
+            teacherDashboard.update();
+            teacherDashboardRepository.save(teacherDashboard);
+        });
     }
 
 }
