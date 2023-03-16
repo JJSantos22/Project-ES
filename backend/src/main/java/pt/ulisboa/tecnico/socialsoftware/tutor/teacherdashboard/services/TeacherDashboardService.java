@@ -77,18 +77,13 @@ public class TeacherDashboardService {
 
                 List<CourseExecution> lastCourseExecutions = teacherDashboard.getCourseExecution().getCourse()
                                 .getCourseExecutions().stream()
-                                .sorted(Comparator.comparingInt(CourseExecution::getYear).reversed()).filter(c -> {
-                                        try {
-                                                c.getYear();
-                                        } catch (Exception e) {
-                                                return false;
-                                        }
-                                        return true;
-                                })
+                                .sorted(Comparator.comparing(CourseExecution::getEndDate).reversed())
+                                .filter(c -> c.getEndDate() != null
+                                                && !c.getEndDate().isAfter(courseExecution.getEndDate()))
                                 .limit(3).collect(Collectors.toList());
 
                 List<StudentStats> studentStats = lastCourseExecutions.stream()
-                                .map(courseexecution -> new StudentStats(teacherDashboard, courseExecution))
+                                .map(courseexecution -> new StudentStats(teacherDashboard, courseexecution))
                                 .collect(Collectors.toList());
 
                 teacherDashboard.setStudentStats(studentStats);

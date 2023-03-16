@@ -66,6 +66,8 @@ class RemoveTeacherDashboardTest extends SpockTest {
         where:
         dashboardId << [null, 10, -1]
     }
+
+    
     def "remove a dashboard that has statistic"(){
         given: "a dashboard"
         def dashboard = createTeacherDashboard()

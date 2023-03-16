@@ -53,4 +53,13 @@ public class StudentStatsDto implements Serializable {
         this.year = year;
     }
 
+    @Override
+    public String toString() {
+        return "StudentStatsDto{" +
+                "numStudents=" + numStudents +
+                "numMore75CorrectQuestions= " + numMore75CorrectQuestions +
+                "numAtLeast3Quizzes= " + numAtLeast3Quizzes +
+                "year= " + year +
+                "}";
+    }
 }

@@ -17,7 +17,6 @@ public class TeacherDashboardDto {
         this.id = teacherDashboard.getId();
         this.studentStatsDtoList = teacherDashboard.getStudentStats().stream().map(StudentStatsDto::new)
                 .collect(Collectors.toList());
-        // For the number of students, we consider only active students
     }
 
     public Integer getId() {
@@ -40,6 +39,7 @@ public class TeacherDashboardDto {
     public String toString() {
         return "TeacherDashboardDto{" +
                 "id=" + id +
+                "studentStatsDtoList= " + studentStatsDtoList +
                 "}";
     }
 }
