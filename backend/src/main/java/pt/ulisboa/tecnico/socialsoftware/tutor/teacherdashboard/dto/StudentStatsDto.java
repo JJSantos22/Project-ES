@@ -14,11 +14,11 @@ public class StudentStatsDto implements Serializable {
     public StudentStatsDto() {
     }
 
-    public StudentStatsDto(StudentStats studentStats/* , CourseExecution courseExecution */) {
+    public StudentStatsDto(StudentStats studentStats) {
         setNumStudents(studentStats.getNumStudents());
         setNumMore75CorrectQuestions(studentStats.getNumMore75CorrectQuestions());
         setNumAtLeast3Quizzes(studentStats.getNumAtLeast3Quizzes());
-        // setYear(courseExecution.getYear());
+        setYear(studentStats.getCourseExecution().getYear());
     }
 
     public Integer getNumStudents() {
