@@ -29,6 +29,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.repository.QuizQuestionRepos
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuestionAnswerRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.repository.QuizAnswerRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.repository.OptionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.execution.repository.CourseExecutionRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.auth.domain.AuthUser
 import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.repository.TeacherDashboardRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.AnswerDetails
@@ -133,22 +134,36 @@ class UpdateTeacherDashboardTest extends SpockTest {
 
     def "update a question stats with 3 available questions and 2 students"() {
         given: "two students"
+        def courseExecution1 = new CourseExecution(externalCourseExecution.getCourse(), COURSE_2_ACRONYM, COURSE_2_ACADEMIC_TERM, Course.Type.TECNICO, LOCAL_DATE_TODAY.plusYears(2))
+        courseExecutionRepository.save(courseExecution1)
         def s1 = createStudent(USER_1_NAME, USER_1_USERNAME, USER_1_EMAIL, externalCourseExecution) 
         def s2 = createStudent(USER_2_NAME, USER_2_USERNAME, USER_2_EMAIL, externalCourseExecution)
+        def s3 = createStudent(USER_3_NAME, USER_3_USERNAME, USER_3_EMAIL, courseExecution1)
 
-        and: "three questions"
+        and: "three questions for each courseExecution"
         def q1 = createQuestion(1, externalCourseExecution.getCourse())
         def q2 = createQuestion(2, externalCourseExecution.getCourse())
         def q3 = createQuestion(3, externalCourseExecution.getCourse())
+        def q5 = createQuestion(1, courseExecution1.getCourse())
+        def q6 = createQuestion(2, courseExecution1.getCourse())
+        def q7 = createQuestion(3, courseExecution1.getCourse())
+        def q9 = createQuestion(5, courseExecution1.getCourse())
 
-        and: "a submitted question"
+        and: "two submitted questions"
         def q4 = createQuestion(4, externalCourseExecution.getCourse())
+        def q8 = createQuestion(4, courseExecution1.getCourse())
         
-        and: "a quiz"
+        
+        and: "two quizzes"
         def quiz = createQuiz(externalCourseExecution)
         def qq1 = createQuizQuestion(quiz, q1, 0)
         def qq2 = createQuizQuestion(quiz, q2, 1)
         def qq3 = createQuizQuestion(quiz, q3, 2)
+        def quiz2 = createQuiz(courseExecution1)
+        def qq4 = createQuizQuestion(quiz2, q5, 0)
+        def qq5 = createQuizQuestion(quiz2, q6, 1)
+        def qq6 = createQuizQuestion(quiz2, q7, 2)
+        def qq7 = createQuizQuestion(quiz2, q9, 3)
 
         and: "students answer questions"
         def quizAs1 = createQuizAnswer(s1, quiz)        
@@ -160,24 +175,45 @@ class UpdateTeacherDashboardTest extends SpockTest {
         teacher.addCourse(externalCourseExecution)
         teacherDashboardService.createTeacherDashboard(externalCourseExecution.getId(), teacher.getId())
 
+        def quizAs3 = createQuizAnswer(s3, quiz2)
+        createQuestionAnswer(qq4, quizAs3, 0, true)
+        createQuestionAnswer(qq5, quizAs3, 1, false)
+        
+        teacher.addCourse(courseExecution1)
+        teacherDashboardService.createTeacherDashboard(courseExecution1.getId(), teacher.getId())
+
         when: "the stats are created"
         def result = teacherDashboardRepository.findAll().get(0)
+        def result1 = teacherDashboardRepository.findAll().get(1)
 
-        then: "the stats start with 0"
-        teacherDashboardRepository.count() == 1L
+        then: "the stats will start with 0"
+        teacherDashboardRepository.count() == 2L
         result.getQuestionStats().get(0).getAnsweredQuestionsUnique() == 0
         result.getQuestionStats().get(0).getAverageQuestionsAnswered() == 0
         result.getQuestionStats().get(0).getNumAvailable() == 0
+        result1.getQuestionStats().get(0).getAnsweredQuestionsUnique() == 0
+        result1.getQuestionStats().get(0).getAverageQuestionsAnswered() == 0
+        result1.getQuestionStats().get(0).getNumAvailable() == 0
+        result1.getQuestionStats().get(1).getAnsweredQuestionsUnique() == 0
+        result1.getQuestionStats().get(1).getAverageQuestionsAnswered() == 0
+        result1.getQuestionStats().get(1).getNumAvailable() == 0
 
         when: "the stats are updated"
         teacherDashboardService.updateAllTeacherDashboards()
         result = teacherDashboardRepository.findAll().get(0)
+        result1 = teacherDashboardRepository.findAll().get(1)
 
         then: "the stats are correct"
-        teacherDashboardRepository.count() == 1L
+        teacherDashboardRepository.count() == 2L
         result.getQuestionStats().get(0).getAnsweredQuestionsUnique() == 2
         result.getQuestionStats().get(0).getAverageQuestionsAnswered() == (float)3/2
         result.getQuestionStats().get(0).getNumAvailable() == 3
+        result1.getQuestionStats().get(0).getAnsweredQuestionsUnique() == 2
+        result1.getQuestionStats().get(0).getAverageQuestionsAnswered() == (float)2
+        result1.getQuestionStats().get(0).getNumAvailable() == 4
+        result1.getQuestionStats().get(1).getAnsweredQuestionsUnique() == 2
+        result1.getQuestionStats().get(1).getAverageQuestionsAnswered() == (float)3/2
+        result1.getQuestionStats().get(1).getNumAvailable() == 3
     }
 
 @TestConfiguration
