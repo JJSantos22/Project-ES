@@ -33,6 +33,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.execution.repository.CourseExecut
 import pt.ulisboa.tecnico.socialsoftware.tutor.auth.domain.AuthUser
 import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.repository.TeacherDashboardRepository
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.AnswerDetails
+import java.time.LocalDateTime
 
 
 import spock.lang.Unroll
@@ -214,6 +215,25 @@ class UpdateTeacherDashboardTest extends SpockTest {
         result1.getQuestionStats().get(1).getAnsweredQuestionsUnique() == 2
         result1.getQuestionStats().get(1).getAverageQuestionsAnswered() == (float)3/2
         result1.getQuestionStats().get(1).getNumAvailable() == 3
+    }
+
+    def "updateAll creates a new Dashboard"(){
+
+        given: "Given a course and a teacher"
+        def courseExecution2020 = new CourseExecution(externalCourse, COURSE_2_ACRONYM, COURSE_2_ACADEMIC_TERM, Course.Type.EXTERNAL, LocalDateTime.of(2020, 1, 1, 1, 1))
+        courseRepository.save(courseExecution2020)
+
+        when:
+        teacher.addCourse(courseExecution2020)
+
+        then:
+        teacher.getDashboards().size() == 0
+
+        when:
+        teacherDashboardService.updateAllTeacherDashboards()
+
+        then:
+        teacher.getDashboards().size() == 1;
     }
 
 @TestConfiguration
