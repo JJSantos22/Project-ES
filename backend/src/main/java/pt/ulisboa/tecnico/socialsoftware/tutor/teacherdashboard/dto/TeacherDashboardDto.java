@@ -5,13 +5,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.domain.TeacherDashboard;
-import java.util.*;
-import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.dto.QuizStatsDto;
 
 public class TeacherDashboardDto {
     private Integer id;
     private Integer numberOfStudents;
-    private ArrayList<QuizStatsDto> quizStats = new ArrayList<>();;
+    private ArrayList<QuizStatsDto> quizStats = new ArrayList<>();
     private List<StudentStatsDto> studentStatsDtoList;
 
     public TeacherDashboardDto() {
@@ -42,13 +40,15 @@ public class TeacherDashboardDto {
         this.studentStatsDtoList = studentStatsDtoList;
     }
 
-    public void setQuizStatsDto(ArrayList<QuizStatsDto> quizStats) {
-        this.quizStats = quizStats;
-    }
-
     public ArrayList<QuizStatsDto> getQuizStatsDto() {
         return quizStats;
     }
+
+    public void setQuizStatsDto(ArrayList<QuizStatsDto> quizStats) {
+
+        this.quizStats = quizStats;
+    }
+
 
     @Override
     public String toString() {
@@ -57,6 +57,6 @@ public class TeacherDashboardDto {
                 ", numberOfStudents=" + numberOfStudents +
                 ", quizStats=" + quizStats +
                 "studentStatsDtoList= " + studentStatsDtoList +
-                "}";
+                '}';
     }
 }
