@@ -73,16 +73,10 @@ public class TeacherDashboardService {
     private TeacherDashboardDto createAndReturnTeacherDashboardDto(CourseExecution courseExecution, Teacher teacher) {
         TeacherDashboard teacherDashboard = new TeacherDashboard(courseExecution, teacher);
         
-        List<CourseExecution> lastCourseExecutions = teacherDashboard.getCourseExecution().getCourse().getCourseExecutions()
-        .stream().filter(c->{
-            try{
-                c.getYear();
-                
-            }catch(Exception e){
-                return false;
-            }
-            return true;})
-        .sorted(Comparator.comparingInt(CourseExecution::getYear).reversed()).limit(3).collect(Collectors.toList());
+        List<CourseExecution> lastCourseExecutions = teacherDashboard.getCourseExecution().getCourse().getCourseExecutions().
+            stream().filter(c -> c.getEndDate() != null && !c.getEndDate().isAfter(courseExecution.getEndDate()))
+            .sorted(Comparator.comparing(CourseExecution::getEndDate).reversed())
+            .limit(3).collect(Collectors.toList());
         
         List<QuestionStats> questionStats = lastCourseExecutions.stream()
                 .map(courseexecution -> new QuestionStats(teacherDashboard, courseexecution))

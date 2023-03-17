@@ -19,7 +19,11 @@ public class QuestionStatsDto implements Serializable {
         this.numAvailable = questionStats.getNumAvailable();
         this.answeredQuestionsUnique = questionStats.getAnsweredQuestionsUnique();
         this.averageQuestionsAnswered = questionStats.getAverageQuestionsAnswered();  
-        this.year = questionStats.getCourseExecution().getYear();
+        try{
+            this.year = questionStats.getCourseExecution().getYear();
+        }catch(Exception e){
+            
+        }
     } 
 
     public Integer getId(){
