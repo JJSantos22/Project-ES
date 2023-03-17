@@ -75,29 +75,19 @@ public class TeacherDashboardService {
 
         TeacherDashboard teacherDashboard = new TeacherDashboard(courseExecution, teacher);
 
-        List<CourseExecution> lastCourseExecutions = teacherDashboard.getCourseExecution().getCourse().getCourseExecutions()
-        .stream().sorted(Comparator.comparingInt(CourseExecution::getYear).reversed()).filter(c->{
-            try{
-                c.getYear();
-                
-            }catch(Exception e){
-                return false;
-            }
-            return true;})
-        .limit(3).collect(Collectors.toList());
+        List<CourseExecution> lastCourseExecutions = teacherDashboard.getCourseExecution().getCourse().getCourseExecutions().
+            stream().sorted(Comparator.comparing(CourseExecution::getEndDate).reversed()).filter(c -> c.getEndDate() != null && !c.getEndDate().isAfter(courseExecution.getEndDate())).
+            limit(3).collect(Collectors.toList());
 
         List<QuizStats> quizStats = lastCourseExecutions.stream()
-        .map(courseexecution -> new QuizStats(teacherDashboard, courseExecution))
+        .map(courseexecution -> new QuizStats(teacherDashboard, courseexecution))
         .collect(Collectors.toList());
 
         teacherDashboard.setQuizStats(quizStats);
 
         quizStats.forEach(quizStat -> quizStatsRepository.save(quizStat));
-        teacherDashboardRepository.save(teacherDashboard);
 
         teacherDashboardRepository.save(teacherDashboard);
-
-       //setQuizStats(teacherDashboard.getId());
 
         TeacherDashboardDto teacherDashboardDto = new TeacherDashboardDto(teacherDashboard);
 

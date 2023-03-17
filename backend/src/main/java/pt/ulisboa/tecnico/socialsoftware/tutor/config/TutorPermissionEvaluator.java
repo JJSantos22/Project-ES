@@ -91,7 +91,7 @@ public class TutorPermissionEvaluator implements PermissionEvaluator {
     private DifficultQuestionRepository difficultQuestionRepository;
 
     @Autowired
-    private TeacherDashboardRepository teacherDashboardRepository;
+    private TeacherDashboardRepository teacherDashboardRepository;                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                      
 
     @Override
     public boolean hasPermission(Authentication authentication, Object targetDomainObject, Object permission) {
