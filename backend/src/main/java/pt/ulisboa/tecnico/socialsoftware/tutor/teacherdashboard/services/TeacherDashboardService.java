@@ -85,7 +85,7 @@ public class TeacherDashboardService {
         .sorted(Comparator.comparingInt(CourseExecution::getYear).reversed()).limit(3).collect(Collectors.toList());
         
         List<QuestionStats> questionStats = lastCourseExecutions.stream()
-                .map(courseexecution -> new QuestionStats(teacherDashboard, courseExecution))
+                .map(courseexecution -> new QuestionStats(teacherDashboard, courseexecution))
                 .collect(Collectors.toList());
         
         teacherDashboard.setQuestionStats(questionStats);
