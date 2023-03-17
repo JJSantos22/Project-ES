@@ -10,6 +10,14 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.Teacher
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Course
 import pt.ulisboa.tecnico.socialsoftware.tutor.execution.domain.CourseExecution
 import pt.ulisboa.tecnico.socialsoftware.tutor.execution.repository.CourseExecutionRepository
+import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz
+import pt.ulisboa.tecnico.socialsoftware.tutor.utils.DateHandler
+import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.domain.StudentStats
+import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.domain.QuizStats
+import java.lang.reflect.Field
+import spock.mock.DetachedMockFactory
+import java.time.LocalDateTime
+
 import spock.lang.Unroll
 
 @DataJpaTest
@@ -201,6 +209,86 @@ import spock.lang.Unroll
         result2.getQuestionStats().get(0).getCourseExecution().getEndDate() == courseExecution2.getEndDate()
     }
 
+
+    def "create a dashboard with multiple coursesExecutions existing"() {
+
+        given: "A course with four courses executions"
+        def courseExecution2017 = new CourseExecution(externalCourse, COURSE_1_ACRONYM, COURSE_1_ACADEMIC_TERM, Course.Type.EXTERNAL, LocalDateTime.of(2017, 1, 1, 1, 1))
+        courseRepository.save(courseExecution2017)
+        def courseExecution2018 = new CourseExecution(externalCourse, COURSE_1_ACRONYM, COURSE_2_ACADEMIC_TERM, Course.Type.EXTERNAL, LocalDateTime.of(2018, 1, 1, 1, 1))
+        courseRepository.save(courseExecution2018)
+        def courseExecution2019 = new CourseExecution(externalCourse, COURSE_2_ACRONYM, COURSE_1_ACADEMIC_TERM, Course.Type.EXTERNAL, LocalDateTime.of(2019, 1, 1, 1, 1))
+        courseRepository.save(courseExecution2019)
+        def courseExecution2020 = new CourseExecution(externalCourse, COURSE_2_ACRONYM, COURSE_2_ACADEMIC_TERM, Course.Type.EXTERNAL, LocalDateTime.of(2020, 1, 1, 1, 1))
+        courseRepository.save(courseExecution2020)
+
+        when:
+        teacher.addCourse(courseExecution2020)
+
+        then:
+        teacher.getCourseExecutions().size() == 1;
+
+        when:
+        teacherDashboardService.createTeacherDashboard(courseExecution2020.getId(), teacher.getId())
+
+        then: "an empty dashboard is created"
+        teacherDashboardRepository.count() == 1L
+
+        def result = teacherDashboardRepository.findAll().get(0)
+        result.getId() != 0
+        result.getCourseExecution().getId() == courseExecution2020.getId()
+        result.getQuizStats().size() == 3
+        result.getQuizStats().get(0).getCourseExecution().getEndDate().getYear()== 2020
+        result.getQuizStats().get(1).getCourseExecution().getEndDate().getYear()== 2019
+        result.getQuizStats().get(2).getCourseExecution().getEndDate().getYear()== 2018
+
+        result.getStudentStats().size() == 3
+        result.getStudentStats().get(0).getCourseExecution().getEndDate().getYear()== 2020
+        result.getStudentStats().get(1).getCourseExecution().getEndDate().getYear()== 2019
+        result.getStudentStats().get(2).getCourseExecution().getEndDate().getYear()== 2018
+
+        result.getQuestionStats().size() == 3
+        result.getQuestionStats().get(0).getCourseExecution().getEndDate().getYear()== 2020
+        result.getQuestionStats().get(1).getCourseExecution().getEndDate().getYear()== 2019
+        result.getQuestionStats().get(2).getCourseExecution().getEndDate().getYear()== 2018
+
+    }
+
+    def "create a dashboard with less than three coursesExecutions existing"() {
+        
+        given: "A course with two courses executions"       
+        def courseExecution2020 = new CourseExecution(externalCourse, COURSE_2_ACRONYM, COURSE_2_ACADEMIC_TERM, Course.Type.EXTERNAL, LocalDateTime.of(2020, 1, 1, 1, 1))
+        courseRepository.save(courseExecution2020)
+
+        when:
+        teacher.addCourse(courseExecution2020)
+        teacher.addCourse(externalCourseExecution)
+
+        then:
+        teacher.getCourseExecutions().size() == 2;
+
+        when:
+        teacherDashboardService.createTeacherDashboard(externalCourseExecution.getId(), teacher.getId())
+
+        then: "an empty dashboard is created"
+        teacherDashboardRepository.count() == 1L
+        
+        def result = teacherDashboardRepository.findAll().get(0)
+        result.getId() != 0
+        result.getCourseExecution().getId() == externalCourseExecution.getId()
+        result.getQuizStats().size() == 2
+        result.getQuizStats().get(0).getCourseExecution().getEndDate().getYear()== DateHandler.now().getYear()
+        result.getQuizStats().get(1).getCourseExecution().getEndDate().getYear()== 2020
+
+        result.getStudentStats().size() == 2
+        result.getStudentStats().get(0).getCourseExecution().getEndDate().getYear()== DateHandler.now().getYear()
+        result.getStudentStats().get(1).getCourseExecution().getEndDate().getYear()== 2020
+        
+        result.getQuestionStats().size() == 2
+        result.getQuestionStats().get(0).getCourseExecution().getEndDate().getYear()== DateHandler.now().getYear()
+        result.getQuestionStats().get(1).getCourseExecution().getEndDate().getYear()== 2020
+    }
+    
     @TestConfiguration
     static class LocalBeanConfiguration extends BeanConfiguration {}
 }

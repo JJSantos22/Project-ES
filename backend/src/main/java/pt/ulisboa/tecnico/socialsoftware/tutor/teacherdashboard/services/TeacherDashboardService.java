@@ -7,70 +7,82 @@ import org.springframework.transaction.annotation.Transactional;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.execution.domain.CourseExecution;
 import pt.ulisboa.tecnico.socialsoftware.tutor.execution.repository.CourseExecutionRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.domain.QuizStats;
+import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.domain.StudentStats;
 import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.domain.TeacherDashboard;
 import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.domain.QuestionStats;
 import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.dto.TeacherDashboardDto;
+import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.repository.StudentStatsRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.repository.TeacherDashboardRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.repository.QuestionStatsRepository;
+import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.repository.QuizStatsRepository;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.Teacher;
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.repository.TeacherRepository;
 
 import java.util.*;
 import java.util.stream.Collectors;
-
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 
 @Service
 public class TeacherDashboardService {
 
-    @Autowired
-    private CourseExecutionRepository courseExecutionRepository;
+        @Autowired
+        private CourseExecutionRepository courseExecutionRepository;
 
-    @Autowired
-    private TeacherRepository teacherRepository;
+        @Autowired
+        private TeacherRepository teacherRepository;
 
-    @Autowired
-    private TeacherDashboardRepository teacherDashboardRepository;
+        @Autowired
+        private TeacherDashboardRepository teacherDashboardRepository;
 
     @Autowired
     private QuestionStatsRepository questionStatsRepository;
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public TeacherDashboardDto getTeacherDashboard(int courseExecutionId, int teacherId) {
-        CourseExecution courseExecution = courseExecutionRepository.findById(courseExecutionId)
-                .orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND));
-        Teacher teacher = teacherRepository.findById(teacherId)
-                .orElseThrow(() -> new TutorException(USER_NOT_FOUND, teacherId));
+        @Autowired
+        private QuizStatsRepository quizStatsRepository;
 
-        if (!teacher.getCourseExecutions().contains(courseExecution))
-            throw new TutorException(TEACHER_NO_COURSE_EXECUTION);
+        @Autowired
+        private StudentStatsRepository studentStatsRepository;
 
-        Optional<TeacherDashboard> dashboardOptional = teacher.getDashboards().stream()
-                .filter(dashboard -> dashboard.getCourseExecution().getId().equals(courseExecutionId))
-                .findAny();
+        @Transactional(isolation = Isolation.READ_COMMITTED)
+        public TeacherDashboardDto getTeacherDashboard(int courseExecutionId, int teacherId) {
+                CourseExecution courseExecution = courseExecutionRepository.findById(courseExecutionId)
+                                .orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND));
+                Teacher teacher = teacherRepository.findById(teacherId)
+                                .orElseThrow(() -> new TutorException(USER_NOT_FOUND, teacherId));
 
-        return dashboardOptional.
-                map(TeacherDashboardDto::new).
-                orElseGet(() -> createAndReturnTeacherDashboardDto(courseExecution, teacher));
-    }
+                if (!teacher.getCourseExecutions().contains(courseExecution))
+                        throw new TutorException(TEACHER_NO_COURSE_EXECUTION);
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public TeacherDashboardDto createTeacherDashboard(int courseExecutionId, int teacherId) {
-        CourseExecution courseExecution = courseExecutionRepository.findById(courseExecutionId)
-                .orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND));
-        Teacher teacher = teacherRepository.findById(teacherId)
-                .orElseThrow(() -> new TutorException(USER_NOT_FOUND, teacherId));
+                Optional<TeacherDashboard> dashboardOptional = teacher.getDashboards().stream()
+                                .filter(dashboard -> dashboard.getCourseExecution().getId().equals(courseExecutionId))
+                                .findAny();
 
-        if (teacher.getDashboards().stream().anyMatch(dashboard -> dashboard.getCourseExecution().equals(courseExecution)))
-            throw new TutorException(TEACHER_ALREADY_HAS_DASHBOARD);
+                return dashboardOptional.map(TeacherDashboardDto::new)
+                                .orElseGet(() -> createAndReturnTeacherDashboardDto(courseExecution, teacher));
+        }
 
-        if (!teacher.getCourseExecutions().contains(courseExecution))
-            throw new TutorException(TEACHER_NO_COURSE_EXECUTION);
+        @Transactional(isolation = Isolation.READ_COMMITTED)
+        public TeacherDashboardDto createTeacherDashboard(int courseExecutionId, int teacherId) {
+                CourseExecution courseExecution = courseExecutionRepository.findById(courseExecutionId)
+                                .orElseThrow(() -> new TutorException(COURSE_EXECUTION_NOT_FOUND));
+                Teacher teacher = teacherRepository.findById(teacherId)
+                                .orElseThrow(() -> new TutorException(USER_NOT_FOUND, teacherId));
 
-        return createAndReturnTeacherDashboardDto(courseExecution, teacher);
-    }
+                if (teacher.getDashboards().stream()
+                                .anyMatch(dashboard -> dashboard.getCourseExecution().equals(courseExecution)))
+                        throw new TutorException(TEACHER_ALREADY_HAS_DASHBOARD);
 
-    private TeacherDashboardDto createAndReturnTeacherDashboardDto(CourseExecution courseExecution, Teacher teacher) {
+                if (!teacher.getCourseExecutions().contains(courseExecution))
+                        throw new TutorException(TEACHER_NO_COURSE_EXECUTION);
+
+                return createAndReturnTeacherDashboardDto(courseExecution, teacher);
+        }
+
+        private TeacherDashboardDto createAndReturnTeacherDashboardDto(CourseExecution courseExecution,
+                        Teacher teacher) {
+
+                
         TeacherDashboard teacherDashboard = new TeacherDashboard(courseExecution, teacher);
         
         List<CourseExecution> lastCourseExecutions = teacherDashboard.getCourseExecution().getCourse().getCourseExecutions().
@@ -82,37 +94,68 @@ public class TeacherDashboardService {
                 .map(courseexecution -> new QuestionStats(teacherDashboard, courseexecution))
                 .collect(Collectors.toList());
         
+                
+        List<QuizStats> quizStats = lastCourseExecutions.stream()
+                .map(courseexecution -> new QuizStats(teacherDashboard, courseexecution))
+                .collect(Collectors.toList());
+                
+        List<StudentStats> studentStats = lastCourseExecutions.stream()
+                .map(courseexecution -> new StudentStats(teacherDashboard, courseexecution))
+                .collect(Collectors.toList());
+                
         teacherDashboard.setQuestionStats(questionStats);
         
         questionStats.forEach(questionStat -> questionStatsRepository.save(questionStat));
+
+        teacherDashboard.setQuizStats(quizStats);
+        
+        studentStatsRepository.saveAll(studentStats);
+
+        quizStatsRepository.saveAll(quizStats);
+
         teacherDashboardRepository.save(teacherDashboard);
         
         return new TeacherDashboardDto(teacherDashboard);
     }
 
+        
     @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void removeTeacherDashboard(Integer dashboardId) {
-        if (dashboardId == null)
+    public void updateTeacherDashboard(Integer dashboardId) {
+        if (dashboardId == null) {
             throw new TutorException(DASHBOARD_NOT_FOUND, -1);
-
+        }
         TeacherDashboard teacherDashboard = teacherDashboardRepository.findById(dashboardId)
                 .orElseThrow(() -> new TutorException(DASHBOARD_NOT_FOUND, dashboardId));
-        teacherDashboard.remove();
-        teacherDashboardRepository.delete(teacherDashboard);
+
+        teacherDashboard.update();
+
     }
 
-    @Transactional(isolation = Isolation.READ_COMMITTED)
-    public void updateAllTeacherDashboards(){
-        courseExecutionRepository.findAll().forEach(courseExecution -> {
-            courseExecution.getTeachers().stream()
-                .filter(teacher -> teacher.getCourseExecutionDashboard(courseExecution)==null)
-                    .forEach(teacher -> createTeacherDashboard(courseExecution.getId(), teacher.getId()));    
-        });
-        List<TeacherDashboard> teacherDashboards = teacherDashboardRepository.findAll();
-        teacherDashboards.forEach(teacherDashboard -> {
-            teacherDashboard.update();
-            teacherDashboardRepository.save(teacherDashboard);
-        });
-    }
+
+        @Transactional(isolation = Isolation.READ_COMMITTED)
+        public void removeTeacherDashboard(Integer dashboardId) {
+                if (dashboardId == null)
+                        throw new TutorException(DASHBOARD_NOT_FOUND, -1);
+
+                TeacherDashboard teacherDashboard = teacherDashboardRepository.findById(dashboardId)
+                
+                                .orElseThrow(() -> new TutorException(DASHBOARD_NOT_FOUND, dashboardId));
+                teacherDashboard.remove();
+                teacherDashboardRepository.delete(teacherDashboard);
+        }
+
+        @Transactional(isolation = Isolation.READ_COMMITTED)
+        public void updateAllTeacherDashboards(){
+                courseExecutionRepository.findAll().forEach(courseExecution -> {
+                courseExecution.getTeachers().stream()
+                        .filter(teacher -> teacher.getCourseExecutionDashboard(courseExecution)==null)
+                        .forEach(teacher -> createTeacherDashboard(courseExecution.getId(), teacher.getId()));    
+                });
+                List<TeacherDashboard> teacherDashboards = teacherDashboardRepository.findAll();
+                teacherDashboards.forEach(teacherDashboard -> {
+                        teacherDashboard.update();
+                        teacherDashboardRepository.save(teacherDashboard);
+                });
+        }
 
 }
