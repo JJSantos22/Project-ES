@@ -1,38 +1,23 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.dto;
 
-import java.io.Serializable;
-
 import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.domain.QuizStats;
 
-public class QuizStatsDto implements Serializable {
-
-    private Integer id;
-
+public class QuizStatsDto {
     private int numQuizzes;
-
     private int numUniqueAnsweredQuizzes;
-
-    private int year;
-
     private float averageQuizzesSolved;
-
-    public QuizStatsDto() {
-    }
+    private int courseExecutionYear;
 
     public QuizStatsDto(QuizStats quizStats) {
-        setId(quizStats.getId());
-        setNumQuizzes(quizStats.getNumQuizzes());
-        setNumUniqueAnsweredQuizzes(quizStats.getNumUniqueAnsweredQuizzes());
-        setAverageQuizzesSolved(quizStats.getAverageQuizzesSolved());
-        setYear(quizStats.getCourseExecution().getYear());
-    }
+        this.numQuizzes = quizStats.getNumQuizzes();
+        this.numUniqueAnsweredQuizzes = quizStats.getNumUniqueAnsweredQuizzes();
+        this.averageQuizzesSolved = quizStats.getAverageQuizzesSolved();
 
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
+        /*
+         * The course execution is guaranteed to have year here, so we
+         * do not catch the exception in this place
+         */
+        this.courseExecutionYear = quizStats.getCourseExecution().getYear();
     }
 
     public int getNumQuizzes() {
@@ -59,11 +44,21 @@ public class QuizStatsDto implements Serializable {
         this.averageQuizzesSolved = averageQuizzesSolved;
     }
 
-    public int getYear() {
-        return year;
+    public int getCourseExecutionYear() {
+        return courseExecutionYear;
     }
 
-    public void setYear(int year) {
-        this.year = year;
+    public void setCourseExecutionYear(int courseExecutionYear) {
+        this.courseExecutionYear = courseExecutionYear;
+    }
+
+    @Override
+    public String toString() {
+        return "QuizStatsDto{" +
+                "numQuizzes=" + numQuizzes +
+                ", numUniqueAnsweredQuizzes=" + numUniqueAnsweredQuizzes +
+                ", averageQuizzesSolved=" + averageQuizzesSolved +
+                ", courseExecutionYear=" + courseExecutionYear +
+                "}";
     }
 }

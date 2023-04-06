@@ -119,7 +119,7 @@ class StudentStatsTest extends SpockTest {
         questionAnswerRepository.save(questionAnswer)
         answerDetailsRepository.save(answerDetails)
         return questionAnswer
-    } 
+    }
 
     def createQuizAnswer(quiz, student, date = DateHandler.now(), completed = true) {
         def quizAnswer = new QuizAnswer()

@@ -30,25 +30,22 @@ public class TeacherDashboardController {
 
         return teacherDashboardService.getTeacherDashboard(courseExecutionId, teacherId);
     }
-    @GetMapping("/teachers/dashboards/{dashboardId}")
-    @PreAuthorize("hasRole('ROLE_TEACHER')and hasPermission(#dashboardId, 'TEACHERDASHBOARD.ACCESS')")
-    public void updateTeacherDashboard(Principal principal, @PathVariable int dashboardId) {
+
+    @PutMapping("/teachers/dashboards/{dashboardId}")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#dashboardId, 'TEACHER.DASHBOARD.ACCESS')")
+    public void updateTeacherDashboard(@PathVariable int dashboardId) {
         teacherDashboardService.updateTeacherDashboard(dashboardId);
     }
 
-    
-    @DeleteMapping("/teachers/dashboards/{dashboardId}")
-    @PreAuthorize("(hasRole('ROLE_TEACHER') or hasRole('ROLE_ADMIN')) and hasPermission(#dashboardId, 'TEACHERDASHBOARD.ACCESS')")
-    public void removeTeacherDashboard(Principal principal, @PathVariable Integer dashboardId) {
-
-        teacherDashboardService.removeTeacherDashboard(dashboardId);
-    }
-
-    @PutMapping("/teachers/dashboards")
+    @PutMapping("/teachers/dashboards/update")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void updateAllTeacherDashboards() {
-        this.teacherDashboardService.updateAllTeacherDashboards();
+        teacherDashboardService.updateAllTeacherDashboards();
     }
 
-
+    @DeleteMapping("/teachers/dashboards/{dashboardId}")
+    @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#dashboardId, 'TEACHER.DASHBOARD.ACCESS')")
+    public void removeTeacherDashboard(@PathVariable int dashboardId) {
+        teacherDashboardService.removeTeacherDashboard(dashboardId);
+    }
 }

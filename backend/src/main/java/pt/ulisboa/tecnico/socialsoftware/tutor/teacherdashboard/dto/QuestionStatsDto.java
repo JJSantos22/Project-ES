@@ -1,79 +1,67 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.teacherdashboard.domain.QuestionStats;
-import java.io.Serializable;
 
-public class QuestionStatsDto implements Serializable {
-
-    private Integer id;
+public class QuestionStatsDto {
     private int numAvailable;
     private int answeredQuestionsUnique;
-    private float averageQuestionsAnswered; 
-    private int year;
+    private float averageQuestionsAnswered;
+    private int courseExecutionYear;
 
-    public QuestionStatsDto(){    
+    public QuestionStatsDto() {
     }
 
-    public QuestionStatsDto(QuestionStats questionStats){
-        this.id = questionStats.getId();
+    public QuestionStatsDto(QuestionStats questionStats) {
         this.numAvailable = questionStats.getNumAvailable();
         this.answeredQuestionsUnique = questionStats.getAnsweredQuestionsUnique();
-        this.averageQuestionsAnswered = questionStats.getAverageQuestionsAnswered();  
-        try{
-            this.year = questionStats.getCourseExecution().getYear();
-        }catch(Exception e){
-            
-        }
-    } 
+        this.averageQuestionsAnswered = questionStats.getAverageQuestionsAnswered();
 
-    public Integer getId(){
-        return id;
+        /*
+         * The course execution is guaranteed to have year here, so we
+         * do not catch the exception in this place
+         */
+        this.courseExecutionYear = questionStats.getCourseExecution().getYear();
     }
 
-    public void setId(Integer id){
-        this.id = id;
-    }
-
-    public int getNumAvailable(){
+    public int getNumAvailable() {
         return numAvailable;
     }
 
-    public int getAnswerQuestionsUnique(){
-        return answeredQuestionsUnique;
-    }
-
-    public float getAverageQuestionsAnswered(){
-        return averageQuestionsAnswered;
-    }
-
-    public int getYear(){
-        return year;
-    }
-
-    public void setNumAvailable(int numAvailable){
+    public void setNumAvailable(int numAvailable) {
         this.numAvailable = numAvailable;
     }
 
-    public void setAnsweredQuestionsUnique(int answeredQuestionsUnique){
+    public int getAnsweredQuestionsUnique() {
+        return answeredQuestionsUnique;
+    }
+
+    public void setAnsweredQuestionsUnique(int answeredQuestionsUnique) {
         this.answeredQuestionsUnique = answeredQuestionsUnique;
     }
 
-    public void setAverageQuestionsUnique(float averageQuestionsUnique){
-        this.averageQuestionsAnswered = averageQuestionsUnique;
+    public float getAverageQuestionsAnswered() {
+        return averageQuestionsAnswered;
     }
 
-    public void setYear(int year){
-        this.year = year;
+    public void setAverageQuestionsAnswered(float averageQuestionsAnswered) {
+        this.averageQuestionsAnswered = averageQuestionsAnswered;
+    }
+
+    public int getCourseExecutionYear() {
+        return courseExecutionYear;
+    }
+
+    public void setCourseExecutionYear(int courseExecutionYear) {
+        this.courseExecutionYear = courseExecutionYear;
     }
 
     @Override
     public String toString() {
         return "QuestionStatsDto{" +
-                "id=" + id +
                 "numAvailable=" + numAvailable +
                 ", answeredQuestionsUnique=" + answeredQuestionsUnique +
                 ", averageQuestionsAnswered=" + averageQuestionsAnswered +
-                ", year=" + year +
+                ", courseExecutionYear=" + courseExecutionYear +
                 '}';
     }
 }
