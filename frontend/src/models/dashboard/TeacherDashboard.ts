@@ -1,11 +1,13 @@
+import QuizStats from './QuizStats';
+
 export default class TeacherDashboard {
   id!: number;
-  numberOfStudents!: number;
+  quizStats!: QuizStats;
 
   constructor(jsonObj?: TeacherDashboard) {
     if (jsonObj) {
       this.id = jsonObj.id;
-      this.numberOfStudents = jsonObj.numberOfStudents;
+      this.quizStats = jsonObj.quizStats;
     }
   }
 }
