@@ -1,11 +1,13 @@
+import StudentStats from './StudentStats';
+
 export default class TeacherDashboard {
   id!: number;
-  numberOfStudents!: number;
+  studentStats!: StudentStats;
 
   constructor(jsonObj?: TeacherDashboard) {
     if (jsonObj) {
       this.id = jsonObj.id;
-      this.numberOfStudents = jsonObj.numberOfStudents;
+      this.studentStats = jsonObj.studentStats;
     }
   }
 }
