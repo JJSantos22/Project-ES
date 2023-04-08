@@ -1,13 +1,12 @@
 <template>
     <div class="container">
-      <h2>QuizStats</h2>
       <div v-if="quizStats[0] != undefined" class="stats-container">
         <div class="items">
           <div ref="numQuizzes" class="icon-wrapper">
             <animated-number :number="quizStats[0].numQuizzes" />
           </div>
           <div class="project-name">
-            <p>Number of Quizzes</p>
+            <p>{{ labels[0] }}</p>
           </div>
         </div>
         <div class="items">
@@ -15,7 +14,7 @@
             <animated-number :number="quizStats[0].numUniqueAnsweredQuizzes" />
           </div>
           <div class="project-name">
-            <p>Number of Quizzes Solved (Unique)</p>
+            <p>{{ labels[1] }}</p>
           </div>
         </div>
         <div class="items">
@@ -23,8 +22,11 @@
             <animated-number :number="quizStats[0].averageQuizzesSolved" />
           </div>
           <div class="project-name">
-            <p>Number of Quizzes Solved (Unique, Average Per Student)</p>
+            <p>{{ labels[2] }}</p>
           </div>
+        </div>
+          <div v-if="quizStats[1] != undefined && quizStats[2] != undefined">
+          <charts :stats="quizStats" :labels="labels"></charts>
         </div>
       </div>
     </div>
@@ -36,10 +38,12 @@
   import RemoteServices from '@/services/RemoteServices';
   import QuizStats from '@/models/dashboard/QuizStats';
   import AnimatedNumber from '@/components/AnimatedNumber.vue';
- 
+  import Charts from '@/components/Charts.vue';
+
   @Component({
     components: {
       AnimatedNumber,
+      Charts,
     },
   })
   export default class QuizStatsView extends Vue {
@@ -48,12 +52,20 @@
     show: string | null = null;
     quizStats: QuizStats[] = [];
   
+    labels: String[] = [];
+
     async created() {
       await this.$store.dispatch('loading');
       try {
         let teacherDashboard = await RemoteServices.getTeacherDashboard();
   
         this.quizStats = teacherDashboard.quizStats;
+        this.labels = [
+        'Number of Quizzes', 
+        'Number of Quizzes Solved (Unique)', 
+        'Number of Quizzes olved (Unique, Average Per Student)'
+        ];
+        
         this.show = 'Global';
       
       } catch (error) {
