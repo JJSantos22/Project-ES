@@ -111,7 +111,7 @@ export default class Charts extends Vue {
   height: 100%;
 
   .items {
-    background-color: rgba(255, 255, 255, 0.75);
+    background-color: rgb(255, 255, 255);
     color: #1976d2;
     border-radius: 5px;
     flex-basis: 25%;

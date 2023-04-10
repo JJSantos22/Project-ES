@@ -61,9 +61,9 @@
   
         this.quizStats = teacherDashboard.quizStats;
         this.labels = [
-        'Number of Quizzes', 
-        'Number of Quizzes Solved (Unique)', 
-        'Number of Quizzes olved (Unique, Average Per Student)'
+        'Quizzes: Total Available', 
+        'Quizzes: (Unique)', 
+        'Quizzes: Solved (Unique, Average Per Student)'
         ];
         
         this.show = 'Global';
