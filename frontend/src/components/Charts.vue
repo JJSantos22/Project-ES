@@ -9,7 +9,7 @@
     </div>
   </div>
 </template>
-  
+
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { Bar } from 'vue-chartjs/legacy';
@@ -54,37 +54,25 @@ export default class Charts extends Vue {
       this.show = 'Global';
       this.chartData = {
         labels: [
-          this.stats[2]?.courseExecutionYear,
-          this.stats[1]?.courseExecutionYear,
-          this.stats[0]?.courseExecutionYear + ' (Current)',
+          this.stats[2][0],
+          this.stats[1][0],
+          this.stats[0][0] + ' (Current)',
         ],
         datasets: [
           {
             label: this.labels[0],
             backgroundColor: '#C0392B',
-            data: [
-              this.stats[2]?.numQuizzes,
-              this.stats[1]?.numQuizzes,
-              this.stats[0]?.numQuizzes,
-            ],
+            data: [this.stats[2][1], this.stats[1][1], this.stats[0][1]],
           },
           {
             label: this.labels[1],
             backgroundColor: '#2980B9',
-            data: [
-              this.stats[2]?.numUniqueAnsweredQuizzes,
-              this.stats[1]?.numUniqueAnsweredQuizzes,
-              this.stats[0]?.numUniqueAnsweredQuizzes,
-            ],
+            data: [this.stats[2][2], this.stats[1][2], this.stats[0][2]],
           },
           {
             label: this.labels[2],
             backgroundColor: '#1ABC9C',
-            data: [
-              this.stats[2]?.averageQuizzesSolved,
-              this.stats[1]?.averageQuizzesSolved,
-              this.stats[0]?.averageQuizzesSolved,
-            ],
+            data: [this.stats[2][3], this.stats[1][3], this.stats[0][3]],
           },
         ],
       };
@@ -125,4 +113,4 @@ export default class Charts extends Vue {
     height: 400px;
   }
 }
-</style> 
+</style>
