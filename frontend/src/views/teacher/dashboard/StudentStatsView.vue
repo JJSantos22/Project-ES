@@ -24,18 +24,9 @@
             <div class="project-name">
               <p>Number of Students who Solved >= 3 Quizzes</p>
             </div>
-        </div>
-        <div class="charts">
-            <p>studentStats[0]: {{ studentStats[0] }}</p>
-            <p>studentStats[1]: {{ studentStats[1] }}</p>
-            <p>studentStats[2]: {{ studentStats[2] }}</p>
-          <div v-if="studentStats[1] != undefined && studentStats[2] != undefined">
-            <charts :stats ="studentStats" :labels="labels"></charts> 
-          </div>  
-          
+        </div>  
         </div>
       </div>
-    </div>
   </template>
   
   <script lang="ts">

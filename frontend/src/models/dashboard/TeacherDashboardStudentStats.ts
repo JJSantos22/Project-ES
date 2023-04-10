@@ -1,6 +1,5 @@
 export default class TeacherDashboardStudentStats {
 
-id!: number;
 numStudents!: number;
 numMore75CorrectQuestions!: number;
 numAtLeast3Quizzes!: number;
