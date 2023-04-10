@@ -2,16 +2,9 @@
   <div class="container">
     <h2>Statistics for this course execution</h2>
     <div v-if="teacherDashboard != null" class="stats-container">
-      <div class="items">
-        <div ref="totalStudents" class="icon-wrapper">
-          <animated-number :number="teacherDashboard.numberOfStudents" />
-        </div>
-        <div class="project-name">
-          <p>Number of Students</p>
-        </div>
-      </div>
+      <student-stats-view :dashboardId="dashboardId"></student-stats-view>
     </div>
-</div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -19,19 +12,26 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import AnimatedNumber from '@/components/AnimatedNumber.vue';
 import TeacherDashboard from '@/models/dashboard/TeacherDashboard';
+import Charts from '@/components/Charts.vue';
+import StudentStatsView from './StudentStatsView.vue';
 
 @Component({
-  components: { AnimatedNumber },
+  components: { StudentStatsView },
 })
 
 export default class TeacherStatsView extends Vue {
   @Prop() readonly dashboardId!: number;
   teacherDashboard: TeacherDashboard | null = null;
 
+  labels : String[] = [];
   async created() {
     await this.$store.dispatch('loading');
     try {
       this.teacherDashboard = await RemoteServices.getTeacherDashboard();
+      this.labels = ['Total Number of Studentes',
+      'Students who Solved >= 75% Questions',
+      'Students who Solved >= 3 Quizzes'
+    ]
     } catch (error) {
       await this.$store.dispatch('error', error);
     }

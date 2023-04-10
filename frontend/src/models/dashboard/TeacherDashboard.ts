@@ -1,8 +1,8 @@
-import StudentStats from './StudentStats';
+import StudentStats from './TeacherDashboardStudentStats';
 
 export default class TeacherDashboard {
   id!: number;
-  studentStats!: StudentStats;
+  studentStats!: StudentStats[];
 
   constructor(jsonObj?: TeacherDashboard) {
     if (jsonObj) {
