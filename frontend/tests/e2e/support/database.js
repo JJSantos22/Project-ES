@@ -211,3 +211,82 @@ Cypress.Commands.add('getDemoCourseExecutionId', () => {
     credentials: credentials,
   });
 });
+
+
+Cypress.Commands.add('createCourseExecutionOnDemoCourse', (academicTerm) => {
+  cy.task('queryDatabase', {
+    query: `INSERT into course_executions (id, academic_term, acronym, end_date, status, type, course_id)
+            SELECT id+1, '${academicTerm}', acronym, end_date, status, type, course_id FROM course_executions
+              WHERE acronym = 'DemoCourse'
+              AND id=(
+                SELECT max(id) FROM course_executions
+              )`,
+    credentials: credentials,
+  });
+
+  cy.task('queryDatabase', {
+    query: `INSERT INTO users_course_executions (users_id, course_executions_id) 
+              values ((SELECT id FROM users WHERE name = 'Demo Teacher'), (SELECT id FROM course_executions 
+                WHERE academic_term = '${academicTerm}'))`,
+    credentials: credentials,
+  })
+});
+
+Cypress.Commands.add(
+  'changeDemoTeacherCourseExecutionMatchingAcademicTerm',
+  (academicTerm) => {
+    cy.task('queryDatabase', {
+      query: `UPDATE users_course_executions
+            SET course_executions_id=(SELECT id from course_executions WHERE academic_term = '${academicTerm}')
+            WHERE users_id=(SELECT id FROM users WHERE name='Demo Teacher')`,
+      credentials: credentials,
+    });
+  }
+);
+
+Cypress.Commands.add(
+  'setStudentStats',
+  (num_at_least3quizzes, num_more75correct_questions, num_students, academic_term) => {
+    cy.task('queryDatabase', {
+      query: `UPDATE student_stats SET num_at_least3quizzes = '${num_at_least3quizzes}',
+                num_more75correct_questions = '${num_more75correct_questions}', 
+                num_students = '${num_students}', 
+                course_execution_id = (SELECT id FROM course_executions 
+                  WHERE academic_term = '${academic_term}'), 
+                teacher_dashboard_id = 1
+              WHERE course_execution_id = (SELECT id from course_executions 
+                WHERE academic_term = '${academic_term}') 
+              `
+              ,
+      credentials: credentials,
+    });
+  }
+);
+
+Cypress.Commands.add('resetStudentStats', () => {
+  dbCommand(`
+         DELETE FROM student_stats;
+    `);
+});
+
+
+Cypress.Commands.add('getDemoCourseExecutionId', () => {
+  cy.task('queryDatabase', {
+    query: "SELECT id FROM course_executions WHERE acronym = 'DemoCourse'",
+    credentials: credentials,
+  });
+});
+
+
+Cypress.Commands.add('deleteCourseExecutions', (academic_term) => {
+  dbCommand(`
+    DELETE from teacher_dashboard_quiz_stats WHERE quiz_stats_id = (SELECT id from quiz_stats WHERE course_execution_id = (SELECT id from course_executions WHERE academic_term = '${academic_term}'));
+    DELETE from teacher_dashboard_question_stats WHERE question_stats_id = (SELECT id from question_stats WHERE execution_id = (SELECT id from course_executions WHERE academic_term = '${academic_term}'));
+    DELETE from student_stats WHERE course_execution_id = (SELECT id from course_executions WHERE academic_term = '${academic_term}');
+    DELETE from quiz_stats WHERE course_execution_id = (SELECT id from course_executions WHERE academic_term = '${academic_term}');
+    DELETE from question_stats WHERE execution_id = (SELECT id from course_executions WHERE academic_term = '${academic_term}'); 
+    DELETE from teacher_dashboard WHERE course_execution_id = (SELECT id from course_executions WHERE academic_term = '${academic_term}');
+    DELETE from users_course_executions WHERE course_executions_id = (SELECT id from course_executions WHERE academic_term = '${academic_term}');
+    DELETE from course_executions WHERE academic_term = '${academic_term}';`
+  );
+});
