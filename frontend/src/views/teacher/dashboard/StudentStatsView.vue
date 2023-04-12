@@ -6,7 +6,7 @@
               <animated-number :number="studentStats[0].numStudents" />
             </div>
             <div class="project-name">
-              <p>Number of Students</p>
+              <p>{{ labels[0] }}</p>
             </div>
         </div>
         <div class="items">
@@ -14,7 +14,7 @@
               <animated-number :number="studentStats[0].numMore75CorrectQuestions" />
             </div>
             <div class="project-name">
-              <p>Number of Students who Solved >= 75% Questions</p>
+              <p>{{ labels[1] }}</p>
             </div>
         </div>
         <div class="items">
@@ -22,9 +22,12 @@
               <animated-number :number="studentStats[0].numAtLeast3Quizzes" />
             </div>
             <div class="project-name">
-              <p>Number of Students who Solved >= 3 Quizzes</p>
+              <p>{{ labels[2] }}</p>
             </div>
         </div>  
+        </div>
+        <div v-if="studentStats[1] != undefined || studentStats[2] != undefined">
+          <charts :stats="data" :labels="labels"></charts>
         </div>
       </div>
   </template>
@@ -48,11 +51,26 @@ import { Student } from '@/models/user/Student';
   
     labels : String[] = [];
 
+    data: any[] = [];
+
     async created() {
       await this.$store.dispatch('loading');
       try {
         let teacherDashboard = await RemoteServices.getTeacherDashboard();
         this.studentStats = teacherDashboard.studentStats;
+      
+        
+        for (let i = 0; i < 3; i++) {
+          if (this.studentStats[i] != undefined){
+            this.data.push([
+              this.studentStats[i].courseExecutionYear, 
+              this.studentStats[i].numStudents, 
+              this.studentStats[i].numMore75CorrectQuestions, 
+              this.studentStats[i].numAtLeast3Quizzes
+            ]);
+          }
+        }
+
         this.labels = ['Total Number of Studentes',
         'Students who Solved >= 75% Questions',
         'Students who Solved >= 3 Quizzes'
