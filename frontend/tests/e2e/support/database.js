@@ -212,7 +212,7 @@ Cypress.Commands.add('getDemoCourseExecutionId', () => {
   });
 });
 
-Cypress.Commands.add('Populate2023CourseExecution', () => {
+Cypress.Commands.add('populate_2023', () => {
   dbCommand(`
     UPDATE quiz_stats SET average_quizzes_solved=4, num_quizzes=8, num_unique_answered_quizzes=12 where id=1;
     UPDATE question_stats SET answered_questions_unique=5, average_questions_answered=3, num_available=25 where id=1;
@@ -221,7 +221,7 @@ Cypress.Commands.add('Populate2023CourseExecution', () => {
 });
 
 
-Cypress.Commands.add('Reset2023CourseExecution', () => {
+Cypress.Commands.add('reset2023CourseExecution', () => {
   dbCommand(`
     UPDATE quiz_stats SET average_quizzes_solved=0, num_quizzes=0, num_unique_answered_quizzes=0 where id=1;
     UPDATE question_stats SET answered_questions_unique=0, average_questions_answered=0, num_available=0 where id=1;
@@ -233,28 +233,27 @@ Cypress.Commands.add('Reset2023CourseExecution', () => {
 Cypress.Commands.add(
   'populate_2022', () => {
     dbCommand(`
-        INSERT INTO course_executions (id, academic_term, acronym, status, type, course_id) values (2, '1st Semester 2022/2023', '2023', 'ACTIVE', 'TECNICO', 1); 
+      INSERT INTO course_executions (id, academic_term, acronym, status, type, course_id) values (2, '1st Semester 2022/2023', '2022', 'ACTIVE', 'TECNICO', 1); 
 
-        INSERT INTO users_course_executions (users_id, course_executions_id) VALUES (1, 2);
+      INSERT INTO users_course_executions (users_id, course_executions_id) VALUES (1, 2);
+      
+      INSERT INTO teacher_dashboard (id, course_execution_id, teacher_id) VALUES (2, 2, 1);
+          
+      INSERT INTO quiz_stats (id, average_quizzes_solved, num_quizzes, num_unique_answered_quizzes, course_execution_id, teacher_dashboard_id) VALUES (2, 10, 6, 50, 1, 2);
+      INSERT INTO quiz_stats (id, average_quizzes_solved, num_quizzes, num_unique_answered_quizzes, course_execution_id, teacher_dashboard_id) VALUES (4, 10, 6, 50, 2, 2);      
+      
+      INSERT INTO question_stats (id, answered_questions_unique, average_questions_answered, num_available, dashboard_id, execution_id) values (2, 10, 6, 50, 1, 2);
+      INSERT INTO question_stats (id, answered_questions_unique, average_questions_answered, num_available, dashboard_id, execution_id) values (4, 10, 6, 50, 2, 2);
+      
+      INSERT INTO student_stats (id, num_at_least3quizzes, num_more75correct_questions, num_students, teacher_dashboard_id, course_execution_id) values (2, 8, 1, 24, 1, 2);
+      INSERT INTO student_stats (id, num_at_least3quizzes, num_more75correct_questions, num_students, teacher_dashboard_id, course_execution_id) values (4, 8, 1, 24, 2, 2);
 
-        INSERT INTO teacher_dashboard (id, course_execution_id, teacher_id) VALUES (2, 2, 1);
-
-        INSERT INTO quiz_stats (id, average_quizzes_solved, num_quizzes, num_unique_answered_quizzes, course_execution_id, teacher_dashboard_id) VALUES (4, 10, 6, 50, 2, 2);
-        INSERT INTO quiz_stats (id, average_quizzes_solved, num_quizzes, num_unique_answered_quizzes, course_execution_id, teacher_dashboard_id) VALUES (5, 15, 9, 75, 2, 3);
-
-        INSERT INTO question_stats (id, answered_questions_unique, average_questions_answered, num_available, dashboard_id, execution_id) values (2, 10, 6, 50, 1, 2);
-        INSERT INTO question_stats (id, answered_questions_unique, average_questions_answered, num_available, dashboard_id, execution_id) values (4, 10, 6, 50, 2, 2);
-        
-        INSERT INTO student_stats (id, num_at_least3quizzes, num_more75correct_questions, num_students, teacher_dashboard_id, course_execution_id) values (2, 8, 1, 24, 1, 2);
-        INSERT INTO student_stats (id, num_at_least3quizzes, num_more75correct_questions, num_students, teacher_dashboard_id, course_execution_id) values (4, 8, 1, 24, 2, 2);
-
-        INSERT INTO teacher_dashboard_quiz_stats (teacher_dashboard_id, quiz_stats_id) VALUES (2, 4);
-        INSERT INTO teacher_dashboard_quiz_stats (teacher_dashboard_id, quiz_stats_id) VALUES (2, 5);
-
-        INSERT INTO teacher_dashboard_question_stats (teacher_dashboard_id, question_stats_id) values (1, 2);
-        INSERT INTO teacher_dashboard_question_stats (teacher_dashboard_id, question_stats_id) values (2, 4);
-        
-        `,
+      INSERT INTO teacher_dashboard_quiz_stats (teacher_dashboard_id, quiz_stats_id) VALUES (1, 2);
+      INSERT INTO teacher_dashboard_quiz_stats (teacher_dashboard_id, quiz_stats_id) VALUES (2, 4);
+      
+      INSERT INTO teacher_dashboard_question_stats (teacher_dashboard_id, question_stats_id) values (1, 2);
+      INSERT INTO teacher_dashboard_question_stats (teacher_dashboard_id, question_stats_id) values (2, 4);
+      `,
     );
 });
 
@@ -262,6 +261,10 @@ Cypress.Commands.add(
   'populate_2019', () => {
     dbCommand(`
     INSERT INTO course_executions (id, academic_term, acronym, status, type, course_id) values (3, '1st Semester 2019/2020', '2019', 'ACTIVE', 'TECNICO', 1);  
+
+    INSERT INTO users_course_executions (users_id, course_executions_id) VALUES (1, 3);
+      
+    INSERT INTO teacher_dashboard (id, course_execution_id, teacher_id) VALUES (3, 3, 1);
        
     INSERT INTO quiz_stats (id, average_quizzes_solved, num_quizzes, num_unique_answered_quizzes, course_execution_id, teacher_dashboard_id) VALUES (5, 15, 9, 75, 2, 3);
     INSERT INTO quiz_stats (id, average_quizzes_solved, num_quizzes, num_unique_answered_quizzes, course_execution_id, teacher_dashboard_id) VALUES (6, 15, 9, 75, 3, 3);
