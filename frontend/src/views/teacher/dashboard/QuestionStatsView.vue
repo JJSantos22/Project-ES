@@ -25,26 +25,19 @@
             <p>Number of Questions Answered (Unique, Average Per Student)</p>
           </div>
         </div>
-        <div v-if="questionStats[1] != undefined || questionStats[2] != undefined">
-          <h2>Comparison with previous course executions</h2>
-          <charts :stats="data" :labels="labels"></charts>
-        </div>
       </div>
     </div>
 </template>
-  <!-- eslint-disable -->
   
   <script lang="ts">
   import { Component, Prop, Vue } from 'vue-property-decorator';
   import RemoteServices from '@/services/RemoteServices';
   import QuestionStats from '@/models/dashboard/QuestionStats';
   import AnimatedNumber from '@/components/AnimatedNumber.vue';
-  import Charts from '@/components/Charts.vue';
  
   @Component({
     components: {
-      AnimatedNumber,
-      Charts,
+      AnimatedNumber
     },
   })
   export default class QuestionStatsView extends Vue {
@@ -52,9 +45,6 @@
     @Prop() readonly dashboardId!: number;
     show: string | null = null;
     questionStats: QuestionStats[] = [];
-    data: any[] = [];
-
-    labels: String[] = [];
   
     async created() {
       await this.$store.dispatch('loading');
@@ -62,23 +52,7 @@
         let teacherDashboard = await RemoteServices.getTeacherDashboard();
   
         this.questionStats = teacherDashboard.questionStats;
-        
-        for (let i = 0; i < 3; i++) {
-          this.data.push([
-            this.questionStats[i]?.courseExecutionYear,
-            this.questionStats[i]?.numAvailable,
-            this.questionStats[i]?.answeredQuestionsUnique,
-            this.questionStats[i]?.averageQuestionsAnswered,
-          ]);
-        }
 
-        this.labels = [
-        'Questions: Total Available',
-        'Questions: Total Answered (Unique)',
-        'Questions: Answered (Unique, Average Per Student)',
-      ];
-
-  
         this.show = 'Global';
       
       } catch (error) {
