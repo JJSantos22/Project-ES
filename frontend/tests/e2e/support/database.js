@@ -211,3 +211,45 @@ Cypress.Commands.add('getDemoCourseExecutionId', () => {
     credentials: credentials,
   });
 });
+
+
+Cypress.Commands.add(
+  'populate_2022', () => {
+    dbCommand(`
+        INSERT INTO course_executions (id, academic_term, acronym, status, type, course_id) values (2, '1st Semester 2022/2023', '2023', 'ACTIVE', 'TECNICO', 1); 
+
+        INSERT INTO users_course_executions (users_id, course_executions_id) VALUES (1, 2);
+
+        INSERT INTO teacher_dashboard (id, course_execution_id, teacher_id) VALUES (2, 2, 1);
+
+        INSERT INTO quiz_stats (id, average_quizzes_solved, num_quizzes, num_unique_answered_quizzes, course_execution_id, teacher_dashboard_id) VALUES (4, 10, 6, 50, 2, 2);
+        INSERT INTO quiz_stats (id, average_quizzes_solved, num_quizzes, num_unique_answered_quizzes, course_execution_id, teacher_dashboard_id) VALUES (5, 15, 9, 75, 2, 3);
+
+        INSERT INTO question_stats (id, answered_questions_unique, average_questions_answered, num_available, dashboard_id, execution_id) values (2, 10, 6, 50, 1, 2);
+        INSERT INTO question_stats (id, answered_questions_unique, average_questions_answered, num_available, dashboard_id, execution_id) values (4, 10, 6, 50, 2, 2);
+        
+        INSERT INTO student_stats (id, num_at_least3quizzes, num_more75correct_questions, num_students, teacher_dashboard_id, course_execution_id) values (2, 8, 1, 24, 1, 2);
+        INSERT INTO student_stats (id, num_at_least3quizzes, num_more75correct_questions, num_students, teacher_dashboard_id, course_execution_id) values (4, 8, 1, 24, 2, 2);
+
+        INSERT INTO teacher_dashboard_quiz_stats (teacher_dashboard_id, quiz_stats_id) VALUES (2, 4);
+        INSERT INTO teacher_dashboard_quiz_stats (teacher_dashboard_id, quiz_stats_id) VALUES (2, 5);
+
+        INSERT INTO teacher_dashboard_question_stats (teacher_dashboard_id, question_stats_id) values (1, 2);
+        INSERT INTO teacher_dashboard_question_stats (teacher_dashboard_id, question_stats_id) values (2, 4);
+        
+        `,
+    );
+});
+        
+Cypress.Commands.add('resetData', () => {
+  dbCommand(`
+      DELETE FROM teacher_dashboard_quiz_stats where quiz_stats_id > 1;
+      DELETE FROM quiz_stats where id > 1;
+      DELETE FROM teacher_dashboard_question_stats where question_stats_id > 1;
+      DELETE FROM question_stats where id > 1;
+      DELETE FROM student_stats where id > 1;
+      DELETE FROM users_course_executions where course_executions_id > 1;
+      DELETE FROM teacher_dashboard where id > 1;
+      DELETE FROM course_executions WHERE id > 1;
+    `)
+});
