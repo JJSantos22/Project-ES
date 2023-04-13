@@ -1,17 +1,10 @@
 <template>
   <div class="container">
     <h2>Statistics for this course execution</h2>
-    <div v-if="teacherDashboard != null" class="stats-container">
-      <div class="items">
-        <div ref="totalStudents" class="icon-wrapper">
-          <animated-number :number="teacherDashboard.numberOfStudents" />
-        </div>
-        <div class="project-name">
-          <p>Number of Students</p>
-        </div>
-      </div>
+    <div v-if="teacherDashboard != null">
+      <question-stats-view :dashboardId="dashboardId"></question-stats-view>
     </div>
-</div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -19,9 +12,10 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import AnimatedNumber from '@/components/AnimatedNumber.vue';
 import TeacherDashboard from '@/models/dashboard/TeacherDashboard';
+import QuestionStatsView from '@/views/teacher/dashboard/QuestionStatsView.vue';
 
 @Component({
-  components: { AnimatedNumber },
+  components: { AnimatedNumber, QuestionStatsView },
 })
 
 export default class TeacherStatsView extends Vue {

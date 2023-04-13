@@ -12,10 +12,12 @@
 import { Component, Vue } from 'vue-property-decorator';
 import RemoteServices from '@/services/RemoteServices';
 import TeacherStatsView from '@/views/teacher/dashboard/TeacherStatsView.vue';
+import QuestionStatsView from '@/views/teacher/dashboard/QuestionStatsView.vue';
 
 @Component({
   components: {
-    TeacherStatsView
+    TeacherStatsView,
+    QuestionStatsView,
   },
 })
 export default class TeacherDashboardView extends Vue {
