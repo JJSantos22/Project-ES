@@ -197,22 +197,6 @@ Cypress.Commands.add('deleteQuestionsAndAnswers', () => {
     `);
 });
 
-Cypress.Commands.add('Populate2023CourseExecution', () => {
-  dbCommand(`
-    UPDATE quiz_stats SET average_quizzes_solved=4, num_quizzes=8, num_unique_answered_quizzes=12 where id=1;
-    UPDATE question_stats SET answered_questions_unique=5, average_questions_answered=3, num_available=25 where id=1;
-    UPDATE student_stats SET num_at_least3quizzes=4, num_more75correct_questions=8, num_students=12 where id=1;`
-  );
-});
-
-Cypress.Commands.add('Reset2023CourseExecution', () => {
-  dbCommand(`
-    UPDATE quiz_stats SET average_quizzes_solved=0, num_quizzes=0, num_unique_answered_quizzes=0 where id=1;
-    UPDATE question_stats SET answered_questions_unique=0, average_questions_answered=0, num_available=0 where id=1;
-    UPDATE student_stats SET num_at_least3quizzes=0, num_more75correct_questions=0, num_students=0 where id=1;`
-  );
-})
-
 const credentials = {
   user: Cypress.env('psql_db_username'),
   host: Cypress.env('psql_db_host'),
