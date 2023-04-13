@@ -25,9 +25,6 @@
           <p>Number of Quizzes Solved ( Unique, Average Per Student)</p>
         </div>
       </div>
-      <div v-if="quizStats[1] != undefined || quizStats[2] != undefined">
-        <charts :stats="data" :labels="labels"></charts>
-      </div>
     </div>
   </div>
 </template>
@@ -57,29 +54,7 @@ export default class QuizStatsView extends Vue {
     await this.$store.dispatch('loading');
     try {
       let teacherDashboard = await RemoteServices.getTeacherDashboard();
-
       this.quizStats = teacherDashboard.quizStats;
-
-      /**for (let i = 0; i < 3; i++) {
-        this.data.push([
-          this.quizStats[i]?.courseExecutionYear,
-          this.quizStats[i]?.numQuizzes,
-          this.quizStats[i]?.numUniqueAnsweredQuizzes,
-          this.quizStats[i]?.averageQuizzesSolved,
-        ]);
-      }*/
-
-      this.data = [
-        ['1 semester 2020', 10, 15, 5],
-        ['2 semester 2020', 15, 15, 15],
-        ['1 semester 2019', 12, 16, 19],
-      ];
-
-      this.labels = [
-        'Quizzes: Total Available',
-        'Quizzes: (Unique)',
-        'Quizzes: Solved (Unique, Average Per Student)',
-      ];
 
       this.show = 'Global';
     } catch (error) {

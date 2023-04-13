@@ -54,25 +54,54 @@ export default class Charts extends Vue {
       this.show = 'Global';
       this.chartData = {
         labels: [
+          /*
           this.stats[2][0],
           this.stats[1][0],
-          this.stats[0][0] + ' (Current)',
+          this.stats[0][0] + ' (Current)',*/
+          'a',
+          'b',
+          'c'
         ],
         datasets: [
           {
             label: this.labels[0],
             backgroundColor: '#C0392B',
-            data: [this.stats[2][1], this.stats[1][1], this.stats[0][1]],
+            data: [
+              /*
+              this.stats[2][1],
+              this.stats[1][1],
+              this.stats[0][1], */
+              20,
+              10,
+              30
+
+            ],
           },
           {
             label: this.labels[1],
             backgroundColor: '#2980B9',
-            data: [this.stats[2][2], this.stats[1][2], this.stats[0][2]],
+            data: [
+              /*
+              this.stats[2][2],
+              this.stats[1][2],
+              this.stats[0][2] */
+              35,
+              20,
+              10
+            ],
           },
           {
             label: this.labels[2],
             backgroundColor: '#1ABC9C',
-            data: [this.stats[2][3], this.stats[1][3], this.stats[0][3]],
+            data: [
+              /*
+              this.stats[2][3],
+              this.stats[1][3],
+              this.stats[0][3] */
+              5,
+              45,
+              25
+            ],
           },
         ],
       };
@@ -99,7 +128,7 @@ export default class Charts extends Vue {
   height: 100%;
 
   .items {
-    background-color: rgb(255, 255, 255);
+    background-color: rgba(255, 255, 255, 0.75);
     color: #1976d2;
     border-radius: 5px;
     flex-basis: 25%;
