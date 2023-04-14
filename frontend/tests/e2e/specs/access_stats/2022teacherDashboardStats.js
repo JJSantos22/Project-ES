@@ -1,4 +1,4 @@
-describe('Dashboard for course execution 2023', () => {
+describe('Dashboard for course execution 2022', () => {
 
     beforeEach(() => {
         cy.deleteQuestionsAndAnswers();
@@ -54,7 +54,7 @@ describe('Dashboard for course execution 2023', () => {
         cy.get('.items').children('.project-name').contains('Number of Quizzes Solved (Unique, Average Per Student)').parent().siblings().first().contains('10');
         
 
-        cy.get('canvas').eq(0).scrollIntoView().wait(5000).screenshot('test/2022/studentStatsTestGraphs');
+        cy.get('canvas').eq(0).scrollIntoView().wait(5000).screenshot('./test/2022/studentStatsTestGraphs');
     
         // PNGJS lets me load the picture from disk
         const PNG = require('pngjs').PNG;
@@ -93,7 +93,7 @@ describe('Dashboard for course execution 2023', () => {
             })
         });
 
-        cy.get('canvas').eq(1).scrollIntoView().wait(5000).screenshot('test/2022/quizzesStatsTestGraphs');
+        cy.get('canvas').eq(1).scrollIntoView().wait(5000).screenshot('./test/2022/quizzesStatsTestGraphs');
     
         cy.readFile(
             './tests/e2e/resources/2022/quizzesStatsGraphs.png', 'base64'
@@ -127,7 +127,7 @@ describe('Dashboard for course execution 2023', () => {
             })
         });
 
-        cy.get('canvas').eq(2).scrollIntoView().wait(5000).screenshot('test/2022/questionStatsTestGraphs');
+        cy.get('canvas').eq(2).scrollIntoView().wait(5000).screenshot('./test/2022/questionStatsTestGraphs');
     
         cy.readFile(
             './tests/e2e/resources/2022/questionStatsGraphs.png', 'base64'
