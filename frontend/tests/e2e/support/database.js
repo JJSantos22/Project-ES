@@ -257,6 +257,37 @@ Cypress.Commands.add(
         `,
     );
 });
+
+Cypress.Commands.add(
+  'populate_2019', () => {
+    dbCommand(`
+    INSERT INTO course_executions (id, academic_term, acronym, status, type, course_id) values (3, '1st Semester 2019/2020', '2019', 'ACTIVE', 'TECNICO', 1);  
+       
+    INSERT INTO quiz_stats (id, average_quizzes_solved, num_quizzes, num_unique_answered_quizzes, course_execution_id, teacher_dashboard_id) VALUES (5, 15, 9, 75, 2, 3);
+    INSERT INTO quiz_stats (id, average_quizzes_solved, num_quizzes, num_unique_answered_quizzes, course_execution_id, teacher_dashboard_id) VALUES (6, 15, 9, 75, 3, 3);
+    INSERT INTO quiz_stats (id, average_quizzes_solved, num_quizzes, num_unique_answered_quizzes, course_execution_id, teacher_dashboard_id) VALUES (3, 15, 9, 75, 1, 3);
+
+    INSERT INTO question_stats (id, answered_questions_unique, average_questions_answered, num_available, dashboard_id, execution_id) values (5, 15, 9, 75, 2, 3);
+    INSERT INTO question_stats (id, answered_questions_unique, average_questions_answered, num_available, dashboard_id, execution_id) values (6, 15, 9, 75, 3, 3);
+    INSERT INTO question_stats (id, answered_questions_unique, average_questions_answered, num_available, dashboard_id, execution_id) values (3, 15, 9, 75, 1, 3);
+   
+
+    INSERT INTO student_stats (id, num_at_least3quizzes, num_more75correct_questions, num_students, teacher_dashboard_id, course_execution_id) values (5, 12, 13, 10, 2, 3);
+    INSERT INTO student_stats (id, num_at_least3quizzes, num_more75correct_questions, num_students, teacher_dashboard_id, course_execution_id) values (6, 12, 13, 10, 3, 3);
+    INSERT INTO student_stats (id, num_at_least3quizzes, num_more75correct_questions, num_students, teacher_dashboard_id, course_execution_id) values (3, 12, 13, 10, 1, 3);
+
+    INSERT INTO teacher_dashboard_quiz_stats (teacher_dashboard_id, quiz_stats_id) VALUES (1, 3);
+    INSERT INTO teacher_dashboard_quiz_stats (teacher_dashboard_id, quiz_stats_id) VALUES (2, 5);
+    INSERT INTO teacher_dashboard_quiz_stats (teacher_dashboard_id, quiz_stats_id) VALUES (3, 6);
+
+
+    INSERT INTO teacher_dashboard_question_stats (teacher_dashboard_id, question_stats_id) values (1, 3);
+
+    INSERT INTO teacher_dashboard_question_stats (teacher_dashboard_id, question_stats_id) values (2, 5);
+    INSERT INTO teacher_dashboard_question_stats (teacher_dashboard_id, question_stats_id) values (3, 6);       
+        `,
+    );
+});
         
 Cypress.Commands.add('resetData', () => {
   dbCommand(`
