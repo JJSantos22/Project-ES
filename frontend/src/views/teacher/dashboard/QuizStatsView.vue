@@ -22,7 +22,7 @@
           <animated-number :number="quizStats[0].averageQuizzesSolved" />
         </div>
         <div class="project-name">
-          <p>Number of Quizzes Solved ( Unique, Average Per Student)</p>
+          <p>Number of Quizzes Solved (Unique, Average Per Student)</p>
         </div>
       </div>
     </div>
